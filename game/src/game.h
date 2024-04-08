@@ -62,6 +62,7 @@ struct Game {
     void update() {
         this->update_player_movement();
         this->update_player_shooting();
+        this->update_player_fire_cd();
         this->update_bullet_movement();
         this->update_bullet_despawning();
     }
@@ -72,7 +73,7 @@ struct Game {
         ClearBackground(LIGHTGRAY);
 
         // auto text = std::to_string(GetMonitorRefreshRate(GetCurrentMonitor()));
-        // auto text = std::to_string(GetScreenWidth());
+        // auto text = std::to_string(player.fire_cooldown);
         // DrawText(text.c_str(), 10, 10, 40, BLACK);
 
         // DrawFPS(10, 10);
@@ -108,7 +109,7 @@ struct Game {
     }
 
     void update_player_shooting() {
-        if (!IsKeyDown((KEY_SPACE))) {
+        if (!IsKeyDown((KEY_SPACE)) || this->player.fire_cooldown != 0.0f) {
             return;
         }
 
@@ -118,6 +119,17 @@ struct Game {
         auto bullet = Bullet::at_position(player_pos_x, player_pos_y);
 
         this->bullets.push_back(bullet);
+        this->player.fire_cooldown = this->player.max_fire_cooldown;
+    }
+
+    void update_player_fire_cd() {
+        auto &fire_cd = this->player.fire_cooldown;
+
+        fire_cd -= GetFrameTime();
+        
+        if (fire_cd < 0.0f) {
+            fire_cd = 0.0f;
+        }
     }
 
     void update_bullet_movement() {
