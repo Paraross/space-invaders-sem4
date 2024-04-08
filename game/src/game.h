@@ -13,19 +13,7 @@ struct Game {
         : player(Player()) {}
 
     void update() {
-        if (IsKeyDown(KEY_RIGHT)) {
-            player.rect.x += player.max_speed;
-        }
-        if (IsKeyDown(KEY_LEFT)) {
-            player.rect.x -= player.max_speed;
-        }
-        if (IsKeyDown(KEY_UP)) {
-            player.rect.y -= player.max_speed;
-        }
-        if (IsKeyDown(KEY_DOWN)) {
-            player.rect.y += player.max_speed;
-        }
-
+        this->update_player_movement();
     }
 
     void draw() {
@@ -41,5 +29,22 @@ struct Game {
         DrawRectangleRec(this->player.rect, this->player.color);
 
         EndDrawing();
+    }
+
+    void update_player_movement() {
+        auto speed = player.max_speed * GetFrameTime();
+
+        if (IsKeyDown(KEY_RIGHT)) {
+            player.rect.x += speed;
+        }
+        if (IsKeyDown(KEY_LEFT)) {
+            player.rect.x -= speed;
+        }
+        if (IsKeyDown(KEY_UP)) {
+            player.rect.y -= speed;
+        }
+        if (IsKeyDown(KEY_DOWN)) {
+            player.rect.y += speed;
+        }
     }
 };

@@ -9,7 +9,7 @@ struct Player {
     float max_speed;
 
     Player()
-     : Player(120.0f, 50.0f, 40.0f, 40.0f, 10.0f, BLACK) {}
+     : Player(120.0f, 50.0f, 40.0f, 40.0f, 1000.0f, BLACK) {}
 
     Player(float pos_x, float pos_y, float width, float height, float max_speed, Color color) {
         this->rect.x = pos_x;
