@@ -7,7 +7,7 @@ struct Bullet {
     Color color;
 
     Bullet(float pos_x, float pos_y)
-     : Bullet(pos_x, pos_y, 10.0f, 30.0f, BLUE) {}
+     : Bullet(pos_x, pos_y, 15.0f, 30.0f, BLUE) {}
 
     Bullet(float pos_x, float pos_y, float width, float height, Color color) {
         this->rect.x = pos_x;
