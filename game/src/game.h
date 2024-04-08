@@ -7,10 +7,12 @@
 
 #include "player.h"
 #include "enemy.h"
+#include "bullet.h"
 
 struct Game {
     Player player;
     std::vector<Enemy> enemies;
+    std::vector<Bullet> bullets;
 
     Game() {
         //+ player
@@ -59,6 +61,9 @@ struct Game {
 
     void update() {
         this->update_player_movement();
+        this->update_player_shooting();
+        this->update_bullet_movement();
+        this->update_bullet_despawning();
     }
 
     void draw() {
@@ -76,6 +81,10 @@ struct Game {
 
         for (auto &enemy: this->enemies) {
             DrawRectangleRec(enemy.rect, enemy.color);
+        }
+
+        for (auto &bullet: this->bullets) {
+            DrawRectangleRec(bullet.rect, bullet.color);
         }
 
         EndDrawing();
@@ -96,5 +105,30 @@ struct Game {
         if (IsKeyDown(KEY_DOWN)) {
             player.rect.y += speed;
         }
+    }
+
+    void update_player_shooting() {
+        if (!IsKeyDown((KEY_SPACE))) {
+            return;
+        }
+
+        auto player_pos_x = this->player.rect.x;
+        auto player_pos_y = this->player.rect.y;
+
+        auto bullet = Bullet::at_position(player_pos_x, player_pos_y);
+
+        this->bullets.push_back(bullet);
+    }
+
+    void update_bullet_movement() {
+        auto bullet_speed = 1000.0f;
+
+        for (auto &bullet : this->bullets) {
+            bullet.rect.y -= bullet_speed * GetFrameTime();
+        }
+    }
+
+    void update_bullet_despawning() {
+        //todo do this shit
     }
 };
