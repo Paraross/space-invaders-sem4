@@ -9,7 +9,10 @@ struct Player {
     float max_speed;
 
     Player()
-     : Player(120.0f, 50.0f, 40.0f, 40.0f, 1000.0f, BLACK) {}
+     : Player(0.0f, 0.0f, 40.0f, 40.0f, 1000.0f, BLACK) {}
+
+    Player(float pos_x, float pos_y)
+     : Player(pos_x, pos_y, 40.0f, 40.0f, 1000.0f, BLACK) {}
 
     Player(float pos_x, float pos_y, float width, float height, float max_speed, Color color) {
         this->rect.x = pos_x;
@@ -22,5 +25,9 @@ struct Player {
 
     static auto init(float pos_x, float pos_y, float width, float height, float max_speed, Color color) -> Player {
         return Player(pos_x, pos_y, width, height, max_speed, color);
+    }
+
+    static auto at_position(float pos_x, float pos_y) -> Player {
+        return Player(pos_x, pos_y);
     }
 };
