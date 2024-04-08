@@ -13,8 +13,6 @@ struct Game {
         : player(Player()) {}
 
     void update() {
-        // this->player.rect.x += 1.0f;
-
         if (IsKeyDown(KEY_RIGHT)) player.rect.x += player.max_speed;
         if (IsKeyDown(KEY_LEFT)) player.rect.x -= player.max_speed;
         if (IsKeyDown(KEY_UP)) player.rect.y -= player.max_speed;
