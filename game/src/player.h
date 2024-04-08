@@ -24,8 +24,3 @@ struct Player {
         return Player(pos_x, pos_y, width, height, max_speed, color);
     }
 };
-
-struct Enemy {
-    Rectangle rect;
-    Color color;
-};
