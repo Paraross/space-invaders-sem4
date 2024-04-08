@@ -5,7 +5,7 @@
 struct Player {
     Rectangle rect;
     Color color;
-    Vector2 velocity;
+    // Vector2 velocity;
     float max_speed;
 
     Player()
