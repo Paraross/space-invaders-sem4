@@ -128,17 +128,26 @@ struct Game {
     }
 
     void update_player_shooting() {
-        if (!IsKeyDown((KEY_SPACE)) || this->player.fire_cooldown != 0.0f) {
+        auto player_view = registry.view<RectangleComp, FireCooldownComp, const PlayerComp>();
+        auto player = player_view.front();
+
+        assert(registry.valid(player));
+
+        auto &fire_cd_comp = player_view.get<FireCooldownComp>(player);
+        auto &fire_cd = fire_cd_comp.fire_cooldown;
+        const auto &max_fire_cd = fire_cd_comp.max_fire_cooldown;
+
+        if (!IsKeyDown((KEY_SPACE)) || fire_cd != 0.0f) {
             return;
         }
 
-        auto player_pos_x = this->player.rect.x;
-        auto player_pos_y = this->player.rect.y;
+        auto player_rect = player_view.get<RectangleComp>(player).rect;
 
-        auto bullet = Bullet::at_position(player_pos_x, player_pos_y);
+        auto bullet = registry.create();
+        registry.emplace<BulletComp>(bullet);
+        registry.emplace<RectangleComp>(bullet, player_rect.x, player_rect.y, 15.0f, 30.0f);
 
-        this->bullets.push_back(bullet);
-        this->player.fire_cooldown = this->player.max_fire_cooldown;
+        fire_cd = max_fire_cd;
     }
 
     void update_player_fire_cd() {
