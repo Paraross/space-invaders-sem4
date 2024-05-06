@@ -2,10 +2,10 @@
 
 #include "raylib.h"
 
-struct PositionComp {
-    float x;
-    float y;
-};
+// struct PositionComp {
+//     float x;
+//     float y;
+// };
 
 struct RectangleComp {
     Rectangle rect;

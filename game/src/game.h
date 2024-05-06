@@ -19,6 +19,7 @@ struct Game {
         registry.emplace<PlayerComp>(player);
         registry.emplace<RectangleComp>(player, GetScreenWidth() / 2.0f, GetScreenHeight() - 90.0f, 40.0f, 40.0f);
         registry.emplace<MaxSpeedComp>(player, 1000.0f);
+        registry.emplace<FireCooldownComp>(player, 0.2f);
 
         //+ enemies
         auto enemy_count = 10;
@@ -29,7 +30,7 @@ struct Game {
 
             auto enemy = registry.create();
             registry.emplace<EnemyComp>(enemy);
-            registry.emplace<PositionComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f);
+            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f, 75.0f, 50.0f);
         }
 
         enemy_count -= 1;
@@ -40,7 +41,7 @@ struct Game {
 
             auto enemy = registry.create();
             registry.emplace<EnemyComp>(enemy);
-            registry.emplace<PositionComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f);
+            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
         }
 
         enemy_count += 1;
@@ -51,7 +52,7 @@ struct Game {
 
             auto enemy = registry.create();
             registry.emplace<EnemyComp>(enemy);
-            registry.emplace<PositionComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f);
+            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
         }
     }
 
