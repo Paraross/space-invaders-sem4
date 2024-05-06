@@ -73,14 +73,29 @@ struct Game {
 
         // DrawFPS(10, 10);
 
-        DrawRectangleRec(this->player.rect, this->player.color);
+        auto player_view = registry.view<RectangleComp, PlayerComp>();
+        auto player = player_view.front();
 
-        for (auto &enemy: this->enemies) {
-            DrawRectangleRec(enemy.rect, enemy.color);
+        assert(registry.valid(player));
+
+        auto player_rect = player_view.get<RectangleComp>(player).rect;
+
+        DrawRectangleRec(player_rect, BLACK); //todo make the color not hard-coded here
+
+        auto enemy_view = registry.view<RectangleComp, EnemyComp>();
+
+        for (auto &enemy : enemy_view) {
+            auto enemy_rect = registry.get<RectangleComp>(enemy).rect;
+
+            DrawRectangleRec(enemy_rect, RED); //todo same here
         }
+        
+        auto bullet_view = registry.view<RectangleComp, BulletComp>();
 
-        for (auto &bullet: this->bullets) {
-            DrawRectangleRec(bullet.rect, bullet.color);
+        for (auto &bullet : bullet_view) {
+            auto bullet_rect = registry.get<RectangleComp>(bullet).rect;
+
+            DrawRectangleRec(bullet_rect, BLUE); //todo same here
         }
 
         EndDrawing();
