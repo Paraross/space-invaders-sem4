@@ -17,6 +17,7 @@ struct Game {
         //+ player
         auto player = registry.create();
         registry.emplace<PlayerComp>(player);
+        registry.emplace<RectangleComp>(player, GetScreenWidth() / 2.0f, GetScreenHeight() - 90.0f, 40.0f, 40.0f);
 
         //+ enemies
         auto enemy_count = 10;
