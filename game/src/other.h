@@ -5,8 +5,6 @@
 struct PositionComp {
     float x;
     float y;
-
-    PositionComp() = default;
 };
 
 struct RectangleComp {
@@ -22,15 +20,11 @@ struct RectangleComp {
 
 struct MaxSpeedComp {
     float max_speed;
-
-    MaxSpeedComp() = default;
 };
 
 struct FireCooldownComp {
     float max_fire_cooldown;
     float fire_cooldown;
-
-    FireCooldownComp() = default;
 
     FireCooldownComp(float cooldown)
         : max_fire_cooldown(cooldown), fire_cooldown(cooldown) {}
