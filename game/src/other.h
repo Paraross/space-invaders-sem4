@@ -24,4 +24,4 @@ struct MaxSpeedComp {
     float max_speed;
 
     MaxSpeedComp() = default;
-}
+};

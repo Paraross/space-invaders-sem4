@@ -18,6 +18,7 @@ struct Game {
         auto player = registry.create();
         registry.emplace<PlayerComp>(player);
         registry.emplace<RectangleComp>(player, GetScreenWidth() / 2.0f, GetScreenHeight() - 90.0f, 40.0f, 40.0f);
+        registry.emplace<MaxSpeedComp>(player, 1000.0f);
 
         //+ enemies
         auto enemy_count = 10;
@@ -102,19 +103,27 @@ struct Game {
     }
 
     void update_player_movement() {
-        auto speed = player.max_speed * GetFrameTime();
+        auto player_view = registry.view<RectangleComp, const MaxSpeedComp, const PlayerComp>();
+        auto player = player_view.front();
+
+        assert(registry.valid(player));
+
+        auto &rect = player_view.get<RectangleComp>(player).rect;
+        auto &max_speed = player_view.get<MaxSpeedComp>(player).max_speed;
+
+        auto speed = max_speed * GetFrameTime();
 
         if (IsKeyDown(KEY_RIGHT)) {
-            player.rect.x += speed;
+            rect.x += speed;
         }
         if (IsKeyDown(KEY_LEFT)) {
-            player.rect.x -= speed;
+            rect.x -= speed;
         }
         if (IsKeyDown(KEY_UP)) {
-            player.rect.y -= speed;
+            rect.y -= speed;
         }
         if (IsKeyDown(KEY_DOWN)) {
-            player.rect.y += speed;
+            rect.y += speed;
         }
     }
 
