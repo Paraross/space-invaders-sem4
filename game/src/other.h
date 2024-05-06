@@ -25,3 +25,13 @@ struct MaxSpeedComp {
 
     MaxSpeedComp() = default;
 };
+
+struct FireCooldownComp {
+    float max_fire_cooldown;
+    float fire_cooldown;
+
+    FireCooldownComp() = default;
+
+    FireCooldownComp(float cooldown)
+        : max_fire_cooldown(cooldown), fire_cooldown(cooldown) {}
+};
