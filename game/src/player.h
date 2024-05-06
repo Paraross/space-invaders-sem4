@@ -2,6 +2,8 @@
 
 #include "raylib.h"
 
+struct PlayerComp;
+
 struct Player {
     Rectangle rect;
     Color color;

@@ -2,6 +2,8 @@
 
 #include "raylib.h"
 
+struct EnemyComp;
+
 struct Enemy {
     Rectangle rect;
     Color color;

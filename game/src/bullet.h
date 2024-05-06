@@ -2,6 +2,8 @@
 
 #include "raylib.h"
 
+struct BulletComp;
+
 struct Bullet {
     Rectangle rect;
     Color color;
