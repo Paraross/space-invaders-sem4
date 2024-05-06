@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-struct EnemyComp;
+struct EnemyComp {};
 
 struct Enemy {
     Rectangle rect;

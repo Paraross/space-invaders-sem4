@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 
-struct BulletComp;
+struct BulletComp {};
 
 struct Bullet {
     Rectangle rect;
