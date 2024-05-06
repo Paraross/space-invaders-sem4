@@ -151,7 +151,13 @@ struct Game {
     }
 
     void update_player_fire_cd() {
-        auto &fire_cd = this->player.fire_cooldown;
+        auto player_view = registry.view<RectangleComp, FireCooldownComp, const PlayerComp>();
+        auto player = player_view.front();
+
+        assert(registry.valid(player));
+
+        auto &fire_cd_comp = player_view.get<FireCooldownComp>(player);
+        auto &fire_cd = fire_cd_comp.fire_cooldown;
 
         fire_cd -= GetFrameTime();
         
@@ -163,8 +169,12 @@ struct Game {
     void update_bullet_movement() {
         auto bullet_speed = 1000.0f;
 
-        for (auto &bullet : this->bullets) {
-            bullet.rect.y -= bullet_speed * GetFrameTime();
+        auto bullet_view = registry.view<RectangleComp, const BulletComp>();
+
+        for (auto &bullet : bullet_view) {
+            auto &bullet_rect = bullet_view.get<RectangleComp>(bullet).rect;
+
+            bullet_rect.y -= bullet_speed * GetFrameTime();
         }
     }
 
