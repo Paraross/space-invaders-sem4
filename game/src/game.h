@@ -8,30 +8,26 @@
 #include "player.h"
 #include "enemy.h"
 #include "bullet.h"
+#include "other.h"
 
 struct Game {
-    Player player;
-    std::vector<Enemy> enemies;
-    std::vector<Bullet> bullets;
+    entt::registry registry;
 
     Game() {
         //+ player
-        auto player = Player::at_position(GetScreenWidth() / 2.0f, GetScreenHeight() - 90.0f);
-
-        this->player = player;
+        auto player = registry.create();
+        registry.emplace<PlayerComp>(player);
 
         //+ enemies
         auto enemy_count = 10;
-        auto enemies = std::vector<Enemy>();
-        // enemies.reserve(enemy_count);
 
         // row 1
-        for (auto i = 0; i < enemy_count; i++) {
+        for (size_t i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = Enemy::at_position((space * (float)(i + 1)) + 75.0f * (float)i, 30.0f);
-
-            enemies.push_back(enemy);
+            auto enemy = registry.create();
+            registry.emplace<EnemyComp>(enemy);
+            registry.emplace<PositionComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f);
         }
 
         enemy_count -= 1;
@@ -40,9 +36,9 @@ struct Game {
         for (auto i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = Enemy::at_position((space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f);
-
-            enemies.push_back(enemy);
+            auto enemy = registry.create();
+            registry.emplace<EnemyComp>(enemy);
+            registry.emplace<PositionComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f);
         }
 
         enemy_count += 1;
@@ -51,12 +47,10 @@ struct Game {
         for (auto i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = Enemy::at_position((space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f);
-
-            enemies.push_back(enemy);
+            auto enemy = registry.create();
+            registry.emplace<EnemyComp>(enemy);
+            registry.emplace<PositionComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f);
         }
-
-        this->enemies = enemies;
     }
 
     void update() {
