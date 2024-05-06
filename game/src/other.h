@@ -5,6 +5,8 @@
 struct PositionComp {
     float x;
     float y;
+
+    PositionComp() = default;
 };
 
 struct RectangleComp {
@@ -17,3 +19,9 @@ struct RectangleComp {
         this->rect.height = height;
     }
 };
+
+struct MaxSpeedComp {
+    float max_speed;
+
+    MaxSpeedComp() = default;
+}
