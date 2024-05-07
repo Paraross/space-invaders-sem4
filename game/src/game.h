@@ -166,6 +166,17 @@ struct Game {
     }
 
     void update_bullet_despawning() {
-        //todo do this shit
+        auto bullets = registry.view<RectangleComp, const BulletComp>();
+
+        for (auto [bullet, rectangle] : bullets.each()) {
+            auto &rect = rectangle.rect;
+
+            auto pos_y = rect.y;
+            auto height = rect.height;
+
+            if (pos_y < -height) {
+                registry.destroy(bullet);
+            }
+        }
     }
 };
