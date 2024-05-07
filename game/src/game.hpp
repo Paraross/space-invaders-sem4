@@ -9,6 +9,7 @@
 #include "enemy.hpp"
 #include "bullet.hpp"
 #include "other.hpp"
+#include "draw.hpp"
 
 struct Game {
     entt::registry registry;
@@ -80,11 +81,7 @@ struct Game {
 
         // DrawFPS(10, 10);
 
-        auto drawables = registry.view<const RectangleComp, const ColorComp>();
-
-        for (const auto [_, rect, color] : drawables.each()) {
-            DrawRectangleRec(rect.rect, color.color);
-        }
+        draw_color_rectangles(registry);
 
         EndDrawing();
     }
