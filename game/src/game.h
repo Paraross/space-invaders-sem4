@@ -20,6 +20,7 @@ struct Game {
         registry.emplace<RectangleComp>(player, GetScreenWidth() / 2.0f, GetScreenHeight() - 90.0f, 40.0f, 40.0f);
         registry.emplace<MaxSpeedComp>(player, 1000.0f);
         registry.emplace<FireCooldownComp>(player, 0.2f);
+        registry.emplace<ColorComp>(player, BLACK);
 
         //+ enemies
         auto enemy_count = 10;
@@ -31,6 +32,7 @@ struct Game {
             auto enemy = registry.create();
             registry.emplace<EnemyComp>(enemy);
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f, 75.0f, 50.0f);
+            registry.emplace<ColorComp>(enemy, RED);
         }
 
         enemy_count -= 1;
@@ -42,6 +44,7 @@ struct Game {
             auto enemy = registry.create();
             registry.emplace<EnemyComp>(enemy);
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
+            registry.emplace<ColorComp>(enemy, RED);
         }
 
         enemy_count += 1;
@@ -53,6 +56,7 @@ struct Game {
             auto enemy = registry.create();
             registry.emplace<EnemyComp>(enemy);
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
+            registry.emplace<ColorComp>(enemy, RED);
         }
     }
 
@@ -75,29 +79,10 @@ struct Game {
 
         // DrawFPS(10, 10);
 
-        auto player_view = registry.view<RectangleComp, PlayerComp>();
-        auto player = player_view.front();
+        auto view = registry.view<const RectangleComp, const ColorComp>();
 
-        assert(registry.valid(player));
-
-        auto player_rect = player_view.get<RectangleComp>(player).rect;
-
-        DrawRectangleRec(player_rect, BLACK); //todo make the color not hard-coded here
-
-        auto enemy_view = registry.view<RectangleComp, EnemyComp>();
-
-        for (auto &enemy : enemy_view) {
-            auto enemy_rect = registry.get<RectangleComp>(enemy).rect;
-
-            DrawRectangleRec(enemy_rect, RED); //todo same here
-        }
-        
-        auto bullet_view = registry.view<RectangleComp, BulletComp>();
-
-        for (auto &bullet : bullet_view) {
-            auto bullet_rect = registry.get<RectangleComp>(bullet).rect;
-
-            DrawRectangleRec(bullet_rect, BLUE); //todo same here
+        for (const auto [_, rect, color] : view.each()) {
+            DrawRectangleRec(rect.rect, color.color);
         }
 
         EndDrawing();
@@ -147,6 +132,7 @@ struct Game {
         auto bullet = registry.create();
         registry.emplace<BulletComp>(bullet);
         registry.emplace<RectangleComp>(bullet, player_rect.x, player_rect.y, 15.0f, 30.0f);
+        registry.emplace<ColorComp>(bullet, BLUE);
 
         fire_cd = max_fire_cd;
     }
