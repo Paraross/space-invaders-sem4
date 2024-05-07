@@ -1,6 +1,7 @@
 #pragma once
 
 #include "raylib.h"
+#include "vec2.hpp"
 
 // struct PositionComp {
 //     float x;
@@ -32,4 +33,8 @@ struct FireCooldownComp {
 
 struct ColorComp {
     Color color;
+};
+
+struct VelocityComp {
+    glm::vec2 velocity;
 };
