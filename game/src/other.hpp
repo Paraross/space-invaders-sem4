@@ -38,3 +38,5 @@ struct ColorComp {
 struct VelocityComp {
     glm::vec2 velocity;
 };
+
+struct DespawnOnScreenLeftComp {};

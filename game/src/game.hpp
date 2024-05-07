@@ -67,7 +67,7 @@ struct Game {
         update_player_shooting();
         update_fire_cd();
         update_rectangle_position();
-        update_bullet_despawning();
+        update_on_screen_left_despawning();
     }
 
     void draw() {
@@ -133,6 +133,7 @@ struct Game {
         registry.emplace<RectangleComp>(bullet, player_rect.x, player_rect.y, 15.0f, 30.0f);
         registry.emplace<VelocityComp>(bullet, glm::vec2(0.0f, -1000.0f));
         registry.emplace<ColorComp>(bullet, BLUE);
+        registry.emplace<DespawnOnScreenLeftComp>(bullet);
 
         fire_cd = max_fire_cd;
     }
@@ -163,17 +164,24 @@ struct Game {
         }
     }
 
-    void update_bullet_despawning() {
-        auto bullets = registry.view<RectangleComp, const BulletComp>();
+    void update_on_screen_left_despawning() {
+        auto entities = registry.view<RectangleComp, const DespawnOnScreenLeftComp>();
 
-        for (auto [bullet, rectangle] : bullets.each()) {
+        for (auto [entity, rectangle] : entities.each()) {
             auto &rect = rectangle.rect;
 
+            auto pos_x = rect.x;
             auto pos_y = rect.y;
+            auto width = rect.width;
             auto height = rect.height;
 
-            if (pos_y < -height) {
-                registry.destroy(bullet);
+            auto left_on_left = pos_x < -width;
+            auto left_on_right = pos_x > GetScreenWidth() + width;
+            auto left_on_top = pos_y < -height;
+            auto left_on_bottom = pos_y > GetScreenHeight() + height;
+
+            if (left_on_left || left_on_right || left_on_top || left_on_bottom) {
+                registry.destroy(entity);
             }
         }
     }
