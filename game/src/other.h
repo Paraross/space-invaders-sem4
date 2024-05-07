@@ -29,3 +29,7 @@ struct FireCooldownComp {
     FireCooldownComp(float cooldown)
         : max_fire_cooldown(cooldown), fire_cooldown(cooldown) {}
 };
+
+struct ColorComp {
+    Color color;
+};
