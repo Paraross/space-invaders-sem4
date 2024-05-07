@@ -1,7 +1,6 @@
 #include "raylib.h"
-#include "entt.hpp"
 
-#include "game.h"
+#include "game.hpp"
 
 const unsigned int WINDOW_WIDTH = 1920;
 const unsigned int WINDOW_HEIGHT = 1080;

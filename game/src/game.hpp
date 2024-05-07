@@ -4,11 +4,12 @@
 #include <vector>
 
 #include "raylib.h"
+#include "entt.hpp"
 
-#include "player.h"
-#include "enemy.h"
-#include "bullet.h"
-#include "other.h"
+#include "player.hpp"
+#include "enemy.hpp"
+#include "bullet.hpp"
+#include "other.hpp"
 
 struct Game {
     entt::registry registry;
