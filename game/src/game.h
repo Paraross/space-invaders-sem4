@@ -18,6 +18,7 @@ struct Game {
         auto player = registry.create();
         registry.emplace<PlayerComp>(player);
         registry.emplace<RectangleComp>(player, GetScreenWidth() / 2.0f, GetScreenHeight() - 90.0f, 40.0f, 40.0f);
+        registry.emplace<VelocityComp>(player, glm::vec2(0.0f, 0.0f));
         registry.emplace<MaxSpeedComp>(player, 1000.0f);
         registry.emplace<FireCooldownComp>(player, 0.2f);
         registry.emplace<ColorComp>(player, BLACK);
@@ -89,27 +90,28 @@ struct Game {
     }
 
     void update_player_movement() {
-        auto player_view = registry.view<RectangleComp, const MaxSpeedComp, const PlayerComp>();
+        auto player_view = registry.view<VelocityComp, const MaxSpeedComp, const PlayerComp>();
         auto player = player_view.front();
 
         assert(registry.valid(player));
 
-        auto &rect = player_view.get<RectangleComp>(player).rect;
         auto &max_speed = player_view.get<MaxSpeedComp>(player).max_speed;
+        auto speed = max_speed;
 
-        auto speed = max_speed * GetFrameTime();
+        auto &velocity = player_view.get<VelocityComp>(player).velocity;
+        velocity = glm::vec2(0.0f, 0.0f);
 
         if (IsKeyDown(KEY_RIGHT)) {
-            rect.x += speed;
+            velocity.x = speed;
         }
         if (IsKeyDown(KEY_LEFT)) {
-            rect.x -= speed;
+            velocity.x = -speed;
         }
         if (IsKeyDown(KEY_UP)) {
-            rect.y -= speed;
+            velocity.y = -speed;
         }
         if (IsKeyDown(KEY_DOWN)) {
-            rect.y += speed;
+            velocity.y = speed;
         }
     }
 
