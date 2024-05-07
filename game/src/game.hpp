@@ -15,6 +15,11 @@ struct Game {
     entt::registry registry;
 
     Game() {
+        //+ score
+        auto score = registry.create();
+        registry.emplace<ScoreComp>(score, 0);
+        registry.emplace<TextComp>(score, "Score: ", glm::vec2(10.0f, 10.0f), 40, BLACK);
+
         //+ player
         auto player = registry.create();
         registry.emplace<PlayerComp>(player);
@@ -63,6 +68,7 @@ struct Game {
     }
 
     void update() {
+        update_score_text();
         update_player_movement();
         update_player_shooting();
         update_fire_cd();
@@ -83,6 +89,7 @@ struct Game {
         // DrawFPS(10, 10);
 
         draw_color_rectangles(registry);
+        draw_text(registry);
 
         EndDrawing();
     }
@@ -188,6 +195,10 @@ struct Game {
     }
 
     void check_bullet_enemy_collisions() {
+        auto score_view = registry.view<ScoreComp>();
+        auto score_entity = score_view.front();
+        auto &score = score_view.get<ScoreComp>(score_entity).score;
+
         auto bullets = registry.view<RectangleComp, const BulletComp>();
 
         for (auto [bullet, bullet_rect] : bullets.each()) {
@@ -199,9 +210,22 @@ struct Game {
                 if (collided) {
                     registry.destroy(enemy);
                     registry.destroy(bullet);
+
+                    score += 1;
+                    
                     break;
                 }
             }
         }
+    }
+
+    void update_score_text() {
+        auto score_view = registry.view<TextComp, const ScoreComp>();
+        auto score_entity = score_view.front();
+
+        auto &score = score_view.get<ScoreComp>(score_entity).score;
+        auto &text = score_view.get<TextComp>(score_entity).text;
+
+        text = "Score: " + std::to_string(score);
     }
 };
