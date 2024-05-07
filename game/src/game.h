@@ -64,7 +64,7 @@ struct Game {
         update_player_movement();
         update_player_shooting();
         update_player_fire_cd();
-        update_bullet_movement();
+        update_rectangle_position();
         update_bullet_despawning();
     }
 
@@ -132,6 +132,7 @@ struct Game {
         auto bullet = registry.create();
         registry.emplace<BulletComp>(bullet);
         registry.emplace<RectangleComp>(bullet, player_rect.x, player_rect.y, 15.0f, 30.0f);
+        registry.emplace<VelocityComp>(bullet, glm::vec2(0.0f, -1000.0f));
         registry.emplace<ColorComp>(bullet, BLUE);
 
         fire_cd = max_fire_cd;
@@ -153,15 +154,15 @@ struct Game {
         }
     }
 
-    void update_bullet_movement() {
-        auto bullet_speed = 1000.0f;
+    void update_rectangle_position() {
+        auto rectangles = registry.view<RectangleComp, const VelocityComp>();
 
-        auto bullets = registry.view<RectangleComp, const BulletComp>();
+        for (auto [_, rectangle, velocity] : rectangles.each()) {
+            auto &rect = rectangle.rect;
+            auto &vel = velocity.velocity;
 
-        for (auto &bullet : bullets) {
-            auto &bullet_rect = bullets.get<RectangleComp>(bullet).rect;
-
-            bullet_rect.y -= bullet_speed * GetFrameTime();
+            rect.x += vel.x * GetFrameTime();
+            rect.y += vel.y * GetFrameTime();
         }
     }
 
