@@ -6,3 +6,4 @@ This project is a recreation and reimagination of the classic game _Space Invade
 
 - [Raylib](https://www.raylib.com)
 - [EnTT](https://github.com/skypjack/entt)
+- [GLM](https://github.com/g-truc/glm)
