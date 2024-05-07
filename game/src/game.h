@@ -61,11 +61,11 @@ struct Game {
     }
 
     void update() {
-        this->update_player_movement();
-        this->update_player_shooting();
-        this->update_player_fire_cd();
-        this->update_bullet_movement();
-        this->update_bullet_despawning();
+        update_player_movement();
+        update_player_shooting();
+        update_player_fire_cd();
+        update_bullet_movement();
+        update_bullet_despawning();
     }
 
     void draw() {
