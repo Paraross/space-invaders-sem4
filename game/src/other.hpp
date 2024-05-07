@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "raylib.h"
 #include "vec2.hpp"
 
@@ -40,3 +42,14 @@ struct VelocityComp {
 };
 
 struct DespawnOnScreenLeftComp {};
+
+struct ScoreComp {
+    int score;
+};
+
+struct TextComp {
+    std::string text;
+    glm::vec2 position;
+    int font_size;
+    Color color;
+};
