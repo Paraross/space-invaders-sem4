@@ -145,7 +145,6 @@ struct Game {
 
         for (auto [_, fire_cd_comp] : fire_cds.each()) {
             auto &fire_cd = fire_cd_comp.fire_cooldown;
-            const auto &max_fire_cd = fire_cd_comp.max_fire_cooldown;
 
             fire_cd -= GetFrameTime();
             
