@@ -64,7 +64,7 @@ struct Game {
     void update() {
         update_player_movement();
         update_player_shooting();
-        update_player_fire_cd();
+        update_fire_cd();
         update_rectangle_position();
         update_bullet_despawning();
     }
@@ -140,19 +140,18 @@ struct Game {
         fire_cd = max_fire_cd;
     }
 
-    void update_player_fire_cd() {
-        auto player_view = registry.view<RectangleComp, FireCooldownComp, const PlayerComp>();
-        auto player = player_view.front();
+    void update_fire_cd() {
+        auto fire_cds = registry.view<FireCooldownComp>();
 
-        assert(registry.valid(player));
+        for (auto [_, fire_cd_comp] : fire_cds.each()) {
+            auto &fire_cd = fire_cd_comp.fire_cooldown;
+            const auto &max_fire_cd = fire_cd_comp.max_fire_cooldown;
 
-        auto &fire_cd_comp = player_view.get<FireCooldownComp>(player);
-        auto &fire_cd = fire_cd_comp.fire_cooldown;
-
-        fire_cd -= GetFrameTime();
-        
-        if (fire_cd < 0.0f) {
-            fire_cd = 0.0f;
+            fire_cd -= GetFrameTime();
+            
+            if (fire_cd < 0.0f) {
+                fire_cd = 0.0f;
+            }
         }
     }
 
