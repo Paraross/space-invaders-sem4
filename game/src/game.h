@@ -79,9 +79,9 @@ struct Game {
 
         // DrawFPS(10, 10);
 
-        auto view = registry.view<const RectangleComp, const ColorComp>();
+        auto drawables = registry.view<const RectangleComp, const ColorComp>();
 
-        for (const auto [_, rect, color] : view.each()) {
+        for (const auto [_, rect, color] : drawables.each()) {
             DrawRectangleRec(rect.rect, color.color);
         }
 
@@ -156,10 +156,10 @@ struct Game {
     void update_bullet_movement() {
         auto bullet_speed = 1000.0f;
 
-        auto bullet_view = registry.view<RectangleComp, const BulletComp>();
+        auto bullets = registry.view<RectangleComp, const BulletComp>();
 
-        for (auto &bullet : bullet_view) {
-            auto &bullet_rect = bullet_view.get<RectangleComp>(bullet).rect;
+        for (auto &bullet : bullets) {
+            auto &bullet_rect = bullets.get<RectangleComp>(bullet).rect;
 
             bullet_rect.y -= bullet_speed * GetFrameTime();
         }
