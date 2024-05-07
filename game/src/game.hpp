@@ -113,7 +113,7 @@ struct Game {
     }
 
     void update_player_shooting() {
-        auto player_view = registry.view<RectangleComp, FireCooldownComp, const PlayerComp>();
+        auto player_view = registry.view<FireCooldownComp, const RectangleComp, const PlayerComp>();
         auto player = player_view.front();
 
         assert(registry.valid(player));
@@ -126,7 +126,7 @@ struct Game {
             return;
         }
 
-        auto player_rect = player_view.get<RectangleComp>(player).rect;
+        auto &player_rect = player_view.get<RectangleComp>(player).rect;
 
         auto bullet = registry.create();
         registry.emplace<BulletComp>(bullet);
