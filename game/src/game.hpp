@@ -68,6 +68,7 @@ struct Game {
         update_fire_cd();
         update_rectangle_position();
         update_on_screen_left_despawning();
+        check_bullet_enemy_collisions();
     }
 
     void draw() {
@@ -182,6 +183,24 @@ struct Game {
 
             if (left_on_left || left_on_right || left_on_top || left_on_bottom) {
                 registry.destroy(entity);
+            }
+        }
+    }
+
+    void check_bullet_enemy_collisions() {
+        auto bullets = registry.view<RectangleComp, const BulletComp>();
+
+        for (auto [bullet, bullet_rect] : bullets.each()) {
+            auto enemies = registry.view<RectangleComp, const EnemyComp>();
+
+            for (auto [enemy, enemy_rect] : enemies.each()) {
+                auto collided = CheckCollisionRecs(bullet_rect.rect, enemy_rect.rect);
+
+                if (collided) {
+                    registry.destroy(enemy);
+                    registry.destroy(bullet);
+                    break;
+                }
             }
         }
     }
