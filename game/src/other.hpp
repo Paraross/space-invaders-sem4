@@ -43,6 +43,8 @@ struct VelocityComp {
 
 struct DespawnOnScreenLeftComp {};
 
+struct TheScoreComp {};
+
 struct ScoreComp {
     int score;
 };
@@ -52,4 +54,12 @@ struct TextComp {
     glm::vec2 position;
     int font_size;
     Color color;
+};
+
+struct HealthComp {
+    float health;
+};
+
+struct DamageComp {
+    float damage;
 };

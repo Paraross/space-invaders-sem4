@@ -17,6 +17,7 @@ struct Game {
     Game() {
         //+ score
         auto score = registry.create();
+        registry.emplace<TheScoreComp>(score);
         registry.emplace<ScoreComp>(score, 0);
         registry.emplace<TextComp>(score, "Score: ", glm::vec2(10.0f, 10.0f), 40, BLACK);
 
@@ -40,6 +41,8 @@ struct Game {
             registry.emplace<EnemyComp>(enemy);
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f, 75.0f, 50.0f);
             registry.emplace<ColorComp>(enemy, RED);
+            registry.emplace<HealthComp>(enemy, 3.0f);
+            registry.emplace<ScoreComp>(enemy, 1);
         }
 
         enemy_count -= 1;
@@ -52,6 +55,8 @@ struct Game {
             registry.emplace<EnemyComp>(enemy);
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
             registry.emplace<ColorComp>(enemy, RED);
+            registry.emplace<HealthComp>(enemy, 1.0f);
+            registry.emplace<ScoreComp>(enemy, 1);
         }
 
         enemy_count += 1;
@@ -64,6 +69,8 @@ struct Game {
             registry.emplace<EnemyComp>(enemy);
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
             registry.emplace<ColorComp>(enemy, RED);
+            registry.emplace<HealthComp>(enemy, 2.0f);
+            // registry.emplace<ScoreComp>(enemy, 1);
         }
     }
 
@@ -75,6 +82,8 @@ struct Game {
         update_rectangle_position();
         update_on_screen_left_despawning();
         check_bullet_enemy_collisions();
+        kill_with_no_health_score();
+        kill_with_no_health();
     }
 
     void draw() {
@@ -142,6 +151,7 @@ struct Game {
         registry.emplace<VelocityComp>(bullet, glm::vec2(0.0f, -1000.0f));
         registry.emplace<ColorComp>(bullet, BLUE);
         registry.emplace<DespawnOnScreenLeftComp>(bullet);
+        registry.emplace<DamageComp>(bullet, 1.0f);
 
         fire_cd = max_fire_cd;
     }
@@ -195,23 +205,18 @@ struct Game {
     }
 
     void check_bullet_enemy_collisions() {
-        auto score_view = registry.view<ScoreComp>();
-        auto score_entity = score_view.front();
-        auto &score = score_view.get<ScoreComp>(score_entity).score;
+        auto bullets = registry.view<RectangleComp, const DamageComp, const BulletComp>();
 
-        auto bullets = registry.view<RectangleComp, const BulletComp>();
+        for (auto [bullet, bullet_rect, bullet_damage] : bullets.each()) {
+            auto enemies = registry.view<RectangleComp, HealthComp, const EnemyComp>();
 
-        for (auto [bullet, bullet_rect] : bullets.each()) {
-            auto enemies = registry.view<RectangleComp, const EnemyComp>();
-
-            for (auto [enemy, enemy_rect] : enemies.each()) {
+            for (auto [enemy, enemy_rect, enemy_health] : enemies.each()) {
                 auto collided = CheckCollisionRecs(bullet_rect.rect, enemy_rect.rect);
 
                 if (collided) {
-                    registry.destroy(enemy);
-                    registry.destroy(bullet);
+                    enemy_health.health -= bullet_damage.damage;
 
-                    score += 1;
+                    registry.destroy(bullet);
                     
                     break;
                 }
@@ -219,8 +224,33 @@ struct Game {
         }
     }
 
+    void kill_with_no_health() {
+        auto entities = registry.view<const HealthComp>();
+
+        for (auto [entity, health] : entities.each()) {
+            if (health.health <= 0.0f) {
+                registry.destroy(entity);
+            }
+        }
+    }
+
+    void kill_with_no_health_score() {
+        auto the_score_view = registry.view<ScoreComp, const TheScoreComp>();
+        auto the_score_entity = the_score_view.front();
+        auto &the_score = the_score_view.get<ScoreComp>(the_score_entity).score;
+
+        auto entities = registry.view<const HealthComp, const ScoreComp>();
+
+        for (auto [entity, health, score] : entities.each()) {
+            if (health.health <= 0.0f) {
+                the_score += score.score;
+                registry.destroy(entity);
+            }
+        }
+    }
+
     void update_score_text() {
-        auto score_view = registry.view<TextComp, const ScoreComp>();
+        auto score_view = registry.view<TextComp, const ScoreComp, const TheScoreComp>();
         auto score_entity = score_view.front();
 
         auto &score = score_view.get<ScoreComp>(score_entity).score;
