@@ -42,7 +42,7 @@ struct Game {
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f, 75.0f, 50.0f);
             registry.emplace<ColorComp>(enemy, RED);
             registry.emplace<HealthComp>(enemy, 3.0f);
-            registry.emplace<ScoreComp>(enemy, 1);
+            registry.emplace<ScoreComp>(enemy, 2);
         }
 
         enemy_count -= 1;
@@ -70,6 +70,7 @@ struct Game {
             registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
             registry.emplace<ColorComp>(enemy, RED);
             registry.emplace<HealthComp>(enemy, 2.0f);
+            registry.emplace<FireCooldownComp>(enemy, 2.0f);
             // registry.emplace<ScoreComp>(enemy, 1);
         }
     }
@@ -78,10 +79,12 @@ struct Game {
         update_score_text();
         update_player_movement();
         update_player_shooting();
+        update_enemy_shooting();
         update_fire_cd();
         update_rectangle_position();
         update_on_screen_left_despawning();
         check_bullet_enemy_collisions();
+        check_bullet_player_collisions();
         kill_with_no_health_score();
         kill_with_no_health();
     }
@@ -147,6 +150,7 @@ struct Game {
 
         auto bullet = registry.create();
         registry.emplace<BulletComp>(bullet);
+        registry.emplace<PlayerComp>(bullet);
         registry.emplace<RectangleComp>(bullet, player_rect.x, player_rect.y, 15.0f, 30.0f);
         registry.emplace<VelocityComp>(bullet, glm::vec2(0.0f, -1000.0f));
         registry.emplace<ColorComp>(bullet, BLUE);
@@ -154,6 +158,31 @@ struct Game {
         registry.emplace<DamageComp>(bullet, 1.0f);
 
         fire_cd = max_fire_cd;
+    }
+
+    void update_enemy_shooting() {
+        auto enemies = registry.view<FireCooldownComp, const RectangleComp, const EnemyComp>();
+
+        for (auto [enemy, fire_cd_comp, rectangle] : enemies.each()) {
+            auto &fire_cd = fire_cd_comp.fire_cooldown;
+            auto &max_fire_cd = fire_cd_comp.max_fire_cooldown;
+            auto &rect = rectangle.rect;
+
+            if (fire_cd != 0.0f) {
+                continue;
+            }
+
+            auto bullet = registry.create();
+            registry.emplace<BulletComp>(bullet);
+            registry.emplace<EnemyComp>(bullet);
+            registry.emplace<RectangleComp>(bullet, rect.x, rect.y, 15.0f, 30.0f);
+            registry.emplace<VelocityComp>(bullet, glm::vec2(0.0f, 500.0f));
+            registry.emplace<ColorComp>(bullet, RED);
+            registry.emplace<DespawnOnScreenLeftComp>(bullet);
+            registry.emplace<DamageComp>(bullet, 1.0f);
+
+            fire_cd = max_fire_cd;
+        }
     }
 
     void update_fire_cd() {
@@ -205,7 +234,7 @@ struct Game {
     }
 
     void check_bullet_enemy_collisions() {
-        auto bullets = registry.view<RectangleComp, const DamageComp, const BulletComp>();
+        auto bullets = registry.view<RectangleComp, const DamageComp, const BulletComp, const PlayerComp>();
 
         for (auto [bullet, bullet_rect, bullet_damage] : bullets.each()) {
             auto enemies = registry.view<RectangleComp, HealthComp, const EnemyComp>();
@@ -215,6 +244,26 @@ struct Game {
 
                 if (collided) {
                     enemy_health.health -= bullet_damage.damage;
+
+                    registry.destroy(bullet);
+                    
+                    break;
+                }
+            }
+        }
+    }
+
+    void check_bullet_player_collisions() {
+        auto bullets = registry.view<RectangleComp, const DamageComp, const BulletComp, const EnemyComp>();
+
+        for (auto [bullet, bullet_rect, bullet_damage] : bullets.each()) {
+            auto players = registry.view<RectangleComp, HealthComp, const PlayerComp>();
+
+            for (auto [playere, player_rect, player_health] : players.each()) {
+                auto collided = CheckCollisionRecs(bullet_rect.rect, player_rect.rect);
+
+                if (collided) {
+                    player_health.health -= bullet_damage.damage;
 
                     registry.destroy(bullet);
                     
