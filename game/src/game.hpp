@@ -10,9 +10,11 @@
 #include "bullet.hpp"
 #include "other.hpp"
 #include "draw.hpp"
+#include "event.hpp"
 
 struct Game {
     entt::registry registry;
+    Events events;
 
     Game() {
         //+ score
