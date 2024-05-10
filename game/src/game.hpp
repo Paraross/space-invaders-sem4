@@ -148,10 +148,13 @@ struct Game {
 
         auto &player_rect = player_view.get<RectangleComp>(player).rect;
 
+        auto bullet_dims = glm::vec2(15.0f, 30.0f);
+        auto bullet_pos = glm::vec2(player_rect.x + player_rect.width / 2.0f - bullet_dims.x / 2.0f, player_rect.y - bullet_dims.y);
+
         auto bullet = registry.create();
         registry.emplace<BulletComp>(bullet);
         registry.emplace<PlayerComp>(bullet);
-        registry.emplace<RectangleComp>(bullet, player_rect.x, player_rect.y, 15.0f, 30.0f);
+        registry.emplace<RectangleComp>(bullet, bullet_pos.x, bullet_pos.y, bullet_dims.x, bullet_dims.y);
         registry.emplace<VelocityComp>(bullet, glm::vec2(0.0f, -1000.0f));
         registry.emplace<ColorComp>(bullet, BLUE);
         registry.emplace<DespawnOnScreenLeftComp>(bullet);
