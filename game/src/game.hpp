@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 
 #include "raylib.h"
 #include "entt.hpp"
@@ -89,6 +90,55 @@ struct Game {
         check_bullet_player_collisions();
         kill_with_no_health_score();
         kill_with_no_health();
+        receive_enemy_hit_events();
+
+        events.clear();
+    }
+
+    void receive_enemy_hit_events() {
+        const auto text_color = BLACK;
+        const auto font_size = 20;
+        auto text_pos = glm::vec2(10.0f, 100.0f);
+
+        auto texts = registry.view<TextComp, const EnemyHitEventTextComp>();
+
+        auto &enemy_hit_events = events.get_enemy_hit_events();
+
+        auto i = 0ull;
+        for (auto [text_entity, text_comp] : texts.each()) {
+            if (enemy_hit_events.size() <= i) {
+                break;
+            }
+
+            auto event = enemy_hit_events[i];
+            auto hit_pos = event.position;
+
+            auto text_stream = std::stringstream();
+            text_stream << "Hit pos: (" << hit_pos.x << ", " << hit_pos.y << ")";
+            auto text = text_stream.str();
+
+            registry.replace<TextComp>(text_entity, text, text_pos, font_size, text_color);
+
+            text_pos.y += font_size + 5.0f;
+            i++;
+        }
+
+        // for (auto &event : events.get_enemy_hit_events()) {
+        while (i < enemy_hit_events.size()) {
+            auto event = enemy_hit_events[i];
+            auto hit_pos = event.position;
+
+            auto text_stream = std::stringstream();
+            text_stream << "Hit pos: (" << hit_pos.x << ", " << hit_pos.y << ")";
+            auto text = text_stream.str();
+
+            auto text_entity = registry.create();
+            registry.emplace<TextComp>(text_entity, text, text_pos, font_size, text_color);
+            registry.emplace<EnemyHitEventTextComp>(text_entity);
+
+            text_pos.y += font_size + 5.0f;
+            i++;
+        }
     }
 
     void draw() {
@@ -248,7 +298,11 @@ struct Game {
                 auto collided = CheckCollisionRecs(bullet_rect.rect, enemy_rect.rect);
 
                 if (collided) {
+                    auto hit_pos = glm::vec2(bullet_rect.rect.x, bullet_rect.rect.y);
+
                     enemy_health.health -= bullet_damage.damage;
+
+                    events.send_enemy_hit_event(EnemyHitEvent(hit_pos));
 
                     registry.destroy(bullet);
                     
