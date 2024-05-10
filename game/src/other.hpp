@@ -63,3 +63,5 @@ struct HealthComp {
 struct DamageComp {
     float damage;
 };
+
+struct EnemyHitEventTextComp {};
