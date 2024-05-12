@@ -47,6 +47,11 @@ class Keybind {
     }
 
 public:
+    Keybind() {
+        inputs[0] = Input();
+        inputs[1] = Input();
+    }
+
     Keybind(Input input) {
         inputs[0] = input;
         inputs[1] = Input();
