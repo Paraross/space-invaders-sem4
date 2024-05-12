@@ -7,3 +7,4 @@ _bin
 /build
 Makefile
 obj
+*.txt
