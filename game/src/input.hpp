@@ -161,6 +161,22 @@ namespace input {
         void read_from_file(const char *file_name) {
             auto file = std::ifstream(file_name);
 
+            if (file.fail()) {
+                auto new_keybinds_file_name = "keybinds.txt";
+
+                std::cout << "--- keybinds file not found ---\n";
+                std::cout << "--- assigning default keybinds ---\n";
+                *this = default_keybinds();
+
+                std::cout << "--- generating keybinds file ---\n";
+                write_to_file(new_keybinds_file_name);
+                std::cout << "--- generated keybinds file: \"" << new_keybinds_file_name << "\" ---\n";
+
+                return;
+            }
+
+            std::cout << "--- keybinds file found ---\n";
+
             auto file_content = std::string(std::istreambuf_iterator<char>(file), {});
 
             auto lines = file_content
@@ -200,6 +216,8 @@ namespace input {
 
                 keybinds[i] = keybind;
             }
+
+            std::cout << "--- keybinds loaded from file: \"" << file_name << "\" ---\n";
         }
 
         void write_to_file(const char *file_name) const {
