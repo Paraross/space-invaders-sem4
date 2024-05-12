@@ -1,20 +1,24 @@
 #include "raylib.h"
 
-enum class InputType {
-    Keyboard,
-    Mouse,
-};
-
-union KbOrM {
-    KeyboardKey keyboard_key;
-    MouseButton mouse_button;
-};
-
 class Input {
     friend class Keybind;
 
+    enum class InputType {
+        Keyboard,
+        Mouse,
+    };
+
+    union KbOrM {
+        KeyboardKey keyboard_key;
+        MouseButton mouse_button;
+    };
+
     InputType type;
     KbOrM input;
+
+    auto is_in_state(bool (*keyboard_fn)(int), bool (*mouse_fn)(int)) -> bool {
+        return type == InputType::Keyboard ? keyboard_fn(input.keyboard_key) : mouse_fn(input.mouse_button);
+    }
 
 public:
     Input() {
@@ -36,12 +40,9 @@ public:
 class Keybind {
     Input inputs[2];
 
-    auto is_in_state(bool (*fn)(int)) -> bool {
-        auto &first = inputs[0];
-        auto &second = inputs[1];
-
-        auto first_in_state = first.type == InputType::Keyboard ? fn(first.input.keyboard_key) : fn(first.input.mouse_button);
-        auto second_in_state = second.type == InputType::Keyboard ? fn(second.input.keyboard_key) : fn(second.input.mouse_button);
+    auto is_in_state(bool (*keyboard_fn)(int), bool (*mouse_fn)(int)) -> bool {
+        auto first_in_state = inputs[0].is_in_state(keyboard_fn, mouse_fn);
+        auto second_in_state = inputs[1].is_in_state(keyboard_fn, mouse_fn);
 
         return first_in_state || second_in_state;
     }
@@ -63,19 +64,19 @@ public:
     }
 
     auto is_down() -> bool {
-        return is_in_state(IsKeyDown);
+        return is_in_state(IsKeyDown, IsMouseButtonDown);
     }
 
     auto is_up() -> bool {
-        return is_in_state(IsKeyUp);
+        return is_in_state(IsKeyUp, IsMouseButtonUp);
     }
 
     auto is_pressed() -> bool {
-        return is_in_state(IsKeyPressed);
+        return is_in_state(IsKeyPressed, IsMouseButtonPressed);
     }
 
     auto is_released() -> bool {
-        return is_in_state(IsKeyReleased);
+        return is_in_state(IsKeyReleased, IsMouseButtonReleased);
     }
 };
 
@@ -86,6 +87,11 @@ struct Keybinds {
     Keybind move_down;
     Keybind shoot;
 
-    Keybinds()
-        : move_right(KEY_RIGHT), move_left(KEY_LEFT), move_up(KEY_UP), move_down(KEY_DOWN), shoot(KEY_SPACE) {}
+    Keybinds() {
+        move_right = Keybind(KEY_D, KEY_RIGHT);
+        move_left = Keybind(KEY_A, KEY_LEFT);
+        move_up = Keybind(KEY_W, KEY_UP);
+        move_down = Keybind(KEY_S, KEY_DOWN);
+        shoot = Keybind(MOUSE_BUTTON_LEFT, KEY_SPACE);
+    }
 };
