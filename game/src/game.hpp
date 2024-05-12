@@ -15,7 +15,6 @@
 
 struct Game {
     entt::registry registry;
-    Events events;
 
     Game() {
         //+ score
@@ -88,11 +87,9 @@ struct Game {
         update_on_screen_left_despawning();
         check_bullet_enemy_collisions();
         check_bullet_player_collisions();
-        kill_with_no_health_score();
         kill_with_no_health();
         receive_enemy_hit_events();
-
-        events.clear();
+        destroy_processed_events();
     }
 
     void receive_enemy_hit_events() {
@@ -100,44 +97,33 @@ struct Game {
         const auto font_size = 20;
         auto text_pos = glm::vec2(10.0f, 100.0f);
 
-        auto texts = registry.view<TextComp, const EnemyHitEventTextComp>();
+        auto texts = registry.group<TextComp, const EnemyHitEventTextComp>();
+        auto text_count = texts.size();
 
-        auto &enemy_hit_events = events.get_enemy_hit_events();
+        auto enemy_hit_events = registry.view<EnemyHitEvent>();
 
-        auto i = 0ull;
-        for (auto [text_entity, text_comp] : texts.each()) {
-            if (enemy_hit_events.size() <= i) {
-                break;
-            }
-
-            auto event = enemy_hit_events[i];
+        for (auto [event_entity, event] : enemy_hit_events.each()) {
             auto hit_pos = event.position;
 
-            auto text_stream = std::stringstream();
-            text_stream << "Hit pos: (" << hit_pos.x << ", " << hit_pos.y << ")";
-            auto text = text_stream.str();
-
-            registry.replace<TextComp>(text_entity, text, text_pos, font_size, text_color);
-
-            text_pos.y += font_size + 5.0f;
-            i++;
-        }
-
-        // for (auto &event : events.get_enemy_hit_events()) {
-        while (i < enemy_hit_events.size()) {
-            auto event = enemy_hit_events[i];
-            auto hit_pos = event.position;
+            text_pos.y += (font_size + 5.0f) * text_count;
 
             auto text_stream = std::stringstream();
-            text_stream << "Hit pos: (" << hit_pos.x << ", " << hit_pos.y << ")";
+            text_stream << text_count << " Hit pos: (" << hit_pos.x << ", " << hit_pos.y << ")";
             auto text = text_stream.str();
 
             auto text_entity = registry.create();
             registry.emplace<TextComp>(text_entity, text, text_pos, font_size, text_color);
             registry.emplace<EnemyHitEventTextComp>(text_entity);
 
-            text_pos.y += font_size + 5.0f;
-            i++;
+            registry.emplace<ProcessedEventComp>(event_entity);
+        }
+    }
+
+    void destroy_processed_events() {
+        auto events = registry.view<ProcessedEventComp>();
+
+        for (auto [event_entity] : events.each()) {
+            registry.destroy(event_entity);
         }
     }
 
@@ -302,7 +288,7 @@ struct Game {
 
                     enemy_health.health -= bullet_damage.damage;
 
-                    events.send_enemy_hit_event(EnemyHitEvent(hit_pos));
+                    send_enemy_hit_event(registry, hit_pos);
 
                     registry.destroy(bullet);
                     
