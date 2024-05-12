@@ -136,12 +136,22 @@ namespace input {
     public:
         Keybinds() {
             keybinds.resize((size_t)InputAction::EnumSize);
+        }
+
+        Keybinds(std::vector<Keybind> keybinds)
+            : keybinds(keybinds) {}
+
+        static auto default_keybinds() -> Keybinds {
+            auto keybinds = std::vector<Keybind>();
+            keybinds.resize((size_t)InputAction::EnumSize);
 
             keybinds[(size_t)InputAction::MoveRight] = Keybind(KEY_D, KEY_RIGHT);
             keybinds[(size_t)InputAction::MoveLeft] = Keybind(KEY_A, KEY_LEFT);
             keybinds[(size_t)InputAction::MoveUp] = Keybind(KEY_W, KEY_UP);
             keybinds[(size_t)InputAction::MoveDown] = Keybind(KEY_S, KEY_DOWN);
             keybinds[(size_t)InputAction::Shoot] = Keybind(MOUSE_BUTTON_LEFT, KEY_SPACE);
+
+            return Keybinds(std::move(keybinds));
         }
 
         auto action(InputAction action) const -> const Keybind & {
