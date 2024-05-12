@@ -12,9 +12,11 @@
 #include "other.hpp"
 #include "draw.hpp"
 #include "event.hpp"
+#include "input.hpp"
 
 struct Game {
     entt::registry registry;
+    Keybinds keybinds;
 
     Game() {
         //+ score
@@ -156,16 +158,16 @@ struct Game {
         auto &velocity = player_view.get<VelocityComp>(player).velocity;
         velocity = glm::vec2(0.0f, 0.0f);
 
-        if (IsKeyDown(KEY_RIGHT)) {
+        if (keybinds.move_right.is_down()) {
             velocity.x = speed;
         }
-        if (IsKeyDown(KEY_LEFT)) {
+        if (keybinds.move_left.is_down()) {
             velocity.x = -speed;
         }
-        if (IsKeyDown(KEY_UP)) {
+        if (keybinds.move_up.is_down()) {
             velocity.y = -speed;
         }
-        if (IsKeyDown(KEY_DOWN)) {
+        if (keybinds.move_down.is_down()) {
             velocity.y = speed;
         }
     }
@@ -180,7 +182,7 @@ struct Game {
         auto &fire_cd = fire_cd_comp.fire_cooldown;
         const auto &max_fire_cd = fire_cd_comp.max_fire_cooldown;
 
-        if (!IsKeyDown((KEY_SPACE)) || fire_cd != 0.0f) {
+        if (!keybinds.shoot.is_down() || fire_cd != 0.0f) {
             return;
         }
 
