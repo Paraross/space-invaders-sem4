@@ -158,16 +158,17 @@ struct Game {
         auto &velocity = player_view.get<VelocityComp>(player).velocity;
         velocity = glm::vec2(0.0f, 0.0f);
 
-        if (keybinds.move_right.is_down()) {
+        // if (keybinds.move_right.is_down()) {
+        if (keybinds.action(InputAction::MoveRight).is_down()) {
             velocity.x = speed;
         }
-        if (keybinds.move_left.is_down()) {
+        if (keybinds.action(InputAction::MoveLeft).is_down()) {
             velocity.x = -speed;
         }
-        if (keybinds.move_up.is_down()) {
+        if (keybinds.action(InputAction::MoveUp).is_down()) {
             velocity.y = -speed;
         }
-        if (keybinds.move_down.is_down()) {
+        if (keybinds.action(InputAction::MoveDown).is_down()) {
             velocity.y = speed;
         }
     }
@@ -182,7 +183,7 @@ struct Game {
         auto &fire_cd = fire_cd_comp.fire_cooldown;
         const auto &max_fire_cd = fire_cd_comp.max_fire_cooldown;
 
-        if (!keybinds.shoot.is_down() || fire_cd != 0.0f) {
+        if (!keybinds.action(InputAction::Shoot).is_down() || fire_cd != 0.0f) {
             return;
         }
 
