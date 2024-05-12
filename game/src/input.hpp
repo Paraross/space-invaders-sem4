@@ -1,40 +1,60 @@
 #include "raylib.h"
 
+enum class InputType {
+    Keyboard,
+    Mouse,
+};
+
+union KbOrM {
+    KeyboardKey keyboard_key;
+    MouseButton mouse_button;
+};
+
+class Input {
+    friend class Keybind;
+
+    InputType type;
+    KbOrM input;
+
+public:
+    Input() {
+        type = InputType::Keyboard;
+        input.keyboard_key = KEY_NULL;
+    }
+
+    Input(KeyboardKey key) {
+        type = InputType::Keyboard;
+        input.keyboard_key = key;
+    }
+
+    Input(MouseButton button) {
+        type = InputType::Mouse;
+        input.mouse_button = button;
+    }
+};
+
 class Keybind {
-    // prywatne structy? nie we wspaniałym języku zwanym c++
-    enum class InputType {
-        Keyboard,
-        Mouse,
-    };
-
-    union KbOrM {
-        KeyboardKey keyboard_key;
-        MouseButton mouse_button;
-    };
-
-    InputType type[2];
-    KbOrM input[2];
+    Input inputs[2];
 
     auto is_in_state(bool (*fn)(int)) -> bool {
-        auto first_in_state = type[0] == InputType::Keyboard ? fn(input[0].keyboard_key) : fn(input[0].mouse_button);
-        auto second_in_state = type[1] == InputType::Keyboard ? fn(input[1].keyboard_key) : fn(input[1].mouse_button);
+        auto &first = inputs[0];
+        auto &second = inputs[1];
+
+        auto first_in_state = first.type == InputType::Keyboard ? fn(first.input.keyboard_key) : fn(first.input.mouse_button);
+        auto second_in_state = second.type == InputType::Keyboard ? fn(second.input.keyboard_key) : fn(second.input.mouse_button);
 
         return first_in_state || second_in_state;
     }
 
 public:
-    Keybind(KeyboardKey key) {
-        type[0] = InputType::Keyboard;
-        type[1] = InputType::Keyboard;
-        input[0].keyboard_key = key;
-        input[1].keyboard_key = KeyboardKey::KEY_NULL;
+    Keybind(Input input) {
+        inputs[0] = input;
+        inputs[1] = Input();
     }
 
-    Keybind(MouseButton button) {
-        type[0] = InputType::Mouse;
-        type[1] = InputType::Keyboard;
-        input[0].mouse_button = button;
-        input[1].keyboard_key = KeyboardKey::KEY_NULL;
+    Keybind(Input input1, Input input2) {
+        inputs[0] = input1;
+        inputs[1] = input2;
     }
 
     auto is_down() -> bool {
