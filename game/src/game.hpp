@@ -319,27 +319,23 @@ struct Game {
     }
 
     void kill_with_no_health() {
-        auto entities = registry.view<const HealthComp>();
-
-        for (auto [entity, health] : entities.each()) {
-            if (health.health <= 0.0f) {
-                registry.destroy(entity);
-            }
-        }
-    }
-
-    void kill_with_no_health_score() {
         auto the_score_view = registry.view<ScoreComp, const TheScoreComp>();
         auto the_score_entity = the_score_view.front();
         auto &the_score = the_score_view.get<ScoreComp>(the_score_entity).score;
 
-        auto entities = registry.view<const HealthComp, const ScoreComp>();
+        auto entities = registry.view<const HealthComp>();
 
-        for (auto [entity, health, score] : entities.each()) {
-            if (health.health <= 0.0f) {
-                the_score += score.score;
-                registry.destroy(entity);
+        for (auto [entity, health] : entities.each()) {
+            if (health.health > 0.0f) {
+                continue;
             }
+
+            if (registry.all_of<ScoreComp>(entity)) {
+                auto score = registry.get<ScoreComp>(entity).score;
+                the_score += score;
+            }
+
+            registry.destroy(entity);
         }
     }
 
