@@ -29,6 +29,18 @@ public:
     auto is_down() -> bool {
         return type == InputType::Keyboard ? IsKeyDown(input.keyboard_key) : IsMouseButtonDown(input.mouse_button);
     }
+
+    auto is_up() -> bool {
+        return type == InputType::Keyboard ? IsKeyUp(input.keyboard_key) : IsMouseButtonUp(input.mouse_button);
+    }
+
+    auto is_pressed() -> bool {
+        return type == InputType::Keyboard ? IsKeyPressed(input.keyboard_key) : IsMouseButtonPressed(input.mouse_button);
+    }
+
+    auto is_released() -> bool {
+        return type == InputType::Keyboard ? IsKeyReleased(input.keyboard_key) : IsMouseButtonReleased(input.mouse_button);
+    }
 };
 
 struct Keybinds {
