@@ -1,5 +1,6 @@
 #pragma once
 
+#include "raylib.h"
 #include "entt.hpp"
 
 #include "other.hpp"
@@ -23,4 +24,8 @@ void draw_text(entt::registry &registry) {
 
         DrawText(text.c_str(), (int)position.x, (int)position.y, font_size, color);
     }
+}
+
+void draw_main_menu_screen(entt::registry &registry) {
+    DrawText("Main Menu", GetScreenWidth() / 2, GetScreenHeight() / 2, 40, BLACK);
 }

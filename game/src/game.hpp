@@ -13,19 +13,43 @@
 #include "draw.hpp"
 #include "event.hpp"
 #include "input.hpp"
+#include "screen/game_screen.hpp"
+#include "screen/main_menu_screen.hpp"
+#include "screen/gameplay_screen.hpp"
 
 namespace game {
     using input::Keybinds;
     using input::InputAction;
+    using game_screen::GameScreen;
+    using main_menu_screen::MainMenuScreen;
+    using gameplay_screen::GameplayScreen;
 
     struct Game {
-        entt::registry registry;
+        // entt::registry registry;
         Keybinds keybinds;
+        MainMenuScreen main_menu_screen;
+        GameplayScreen gameplay_screen;
+        GameScreen current_screen;
 
         Game() {
+            init_inital_boot();
             // keybinds.write_to_file("keybinds.txt");
+
+        }
+
+        void init_inital_boot() {
             keybinds.read_from_file("keybinds.txt");
 
+            current_screen = GameScreen::MainMenu;
+
+            init_main_menu_screen();
+        }
+
+        void init_main_menu_screen() {
+
+        }
+        
+        void init_gameplay_screen() {
             //+ score
             auto score = registry.create();
             registry.emplace<TheScoreComp>(score);
@@ -87,18 +111,40 @@ namespace game {
         }
 
         void update() {
-            update_score_text();
-            update_player_movement();
-            update_player_shooting();
-            update_enemy_shooting();
-            update_fire_cd();
-            update_rectangle_position();
-            update_on_screen_left_despawning();
-            check_bullet_enemy_collisions();
-            check_bullet_player_collisions();
-            kill_with_no_health();
-            receive_enemy_hit_events();
+            if (current_screen == GameScreen::MainMenu) {
+                draw_main_menu_screen(registry);
+                process_main_menu_inputs();
+            } else if (current_screen == GameScreen::Gameplay) {
+                update_score_text();
+                update_player_movement();
+                update_player_shooting();
+                update_enemy_shooting();
+                update_fire_cd();
+                update_rectangle_position();
+                update_on_screen_left_despawning();
+                check_bullet_enemy_collisions();
+                check_bullet_player_collisions();
+                kill_with_no_health();
+                receive_enemy_hit_events();
+                process_gameplay_inputs();
+            }
+
             destroy_processed_events();
+        }
+
+        void process_main_menu_inputs() {
+            if (IsKeyPressed(KEY_ENTER)) {
+                current_screen = GameScreen::Gameplay;
+                init_gameplay_screen();
+            }
+        }
+
+        void process_gameplay_inputs() {
+            if (IsKeyPressed(KEY_ESCAPE)) {
+                registry.clear();
+                current_screen = GameScreen::MainMenu;
+                init_main_menu_screen();
+            }
         }
 
         void receive_enemy_hit_events() {
@@ -147,8 +193,12 @@ namespace game {
 
             // DrawFPS(10, 10);
 
-            draw_color_rectangles(registry);
-            draw_text(registry);
+            if (current_screen == GameScreen::MainMenu) {
+                draw_main_menu_screen(registry);
+            } else if (current_screen == GameScreen::Gameplay) {
+                draw_color_rectangles(registry);
+                draw_text(registry);
+            }
 
             EndDrawing();
         }
