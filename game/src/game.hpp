@@ -17,7 +17,7 @@
 namespace game {
     using input::Keybinds;
     using input::InputAction;
-    using game_screen::GameScreen;
+    using game_screen::GameScreenType;
     using game_screen::Screen;
     using main_menu_screen::MainMenuScreen;
     using gameplay_screen::GameplayScreen;
@@ -40,9 +40,9 @@ namespace game {
             // unload prev screen
             if (next_screen_id != current_screen->id()) {
                 std::cout << "--- screen changed from " << (int)current_screen->id() << " to " << (int)next_screen_id << " ---\n";
-                if (next_screen_id == GameScreen::MainMenu) {
+                if (next_screen_id == GameScreenType::MainMenu) {
                     main_menu_screen.load();
-                } else if (next_screen_id == GameScreen::Gameplay) {
+                } else if (next_screen_id == GameScreenType::Gameplay) {
                     gameplay_screen.load();
                 }
             }
@@ -67,10 +67,10 @@ namespace game {
         }
 
     private:
-        void change_current_screen(GameScreen next_screen_id) {
-            if (next_screen_id == GameScreen::MainMenu) {
+        void change_current_screen(GameScreenType next_screen_id) {
+            if (next_screen_id == GameScreenType::MainMenu) {
                 current_screen = &main_menu_screen;
-            } else if (next_screen_id == GameScreen::Gameplay) {
+            } else if (next_screen_id == GameScreenType::Gameplay) {
                 current_screen = &gameplay_screen;
             } else {
                 throw std::exception("Tried to change to invalid screen.");

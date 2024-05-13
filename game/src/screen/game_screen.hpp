@@ -1,7 +1,7 @@
 #pragma once
 
 namespace game_screen {
-    enum class GameScreen {
+    enum class GameScreenType {
         MainMenu,
         // Settings,
         Gameplay,
@@ -10,8 +10,8 @@ namespace game_screen {
 
     struct Screen {
         virtual void load() = 0;
-        virtual auto update() -> GameScreen = 0;
+        virtual auto update() -> GameScreenType= 0;
         virtual void draw() = 0;
-        virtual auto id() -> GameScreen = 0;
+        virtual auto id() -> GameScreenType= 0;
     };
 }

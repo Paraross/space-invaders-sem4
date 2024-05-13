@@ -5,7 +5,7 @@
 #include "screen/game_screen.hpp"
 
 namespace main_menu_screen {
-    using game_screen::GameScreen;
+    using game_screen::GameScreenType;
     using game_screen::Screen;
 
     class MainMenuScreen : public Screen {
@@ -13,15 +13,15 @@ namespace main_menu_screen {
 
     public:
         MainMenuScreen() {
-
+            
         }
 
         void load() {
 
         }
 
-        auto update() -> GameScreen {
-            auto next_screen = GameScreen::MainMenu;
+        auto update() -> GameScreenType {
+            auto next_screen = GameScreenType::MainMenu;
 
             draw_main_menu_screen(registry);
             next_screen = process_inputs();
@@ -33,17 +33,17 @@ namespace main_menu_screen {
             draw_main_menu_screen(registry);
         }
 
-        auto id() -> GameScreen {
-            return GameScreen::MainMenu;
+        auto id() -> GameScreenType {
+            return GameScreenType::MainMenu;
         }
 
     private:
-        auto process_inputs() -> GameScreen {
+        auto process_inputs() -> GameScreenType {
             if (IsKeyPressed(KEY_ENTER)) {
-                return GameScreen::Gameplay;
+                return GameScreenType::Gameplay;
                 // load_gameplay_screen();
             }
-            return GameScreen::MainMenu;
+            return GameScreenType::MainMenu;
         }
     };
 }

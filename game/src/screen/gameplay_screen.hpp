@@ -9,7 +9,7 @@
 namespace gameplay_screen {
     using input::Keybinds;
     using input::InputAction;
-    using game_screen::GameScreen;
+    using game_screen::GameScreenType;
     using game_screen::Screen;
 
     class GameplayScreen : public Screen {
@@ -82,8 +82,8 @@ namespace gameplay_screen {
             }
         }
 
-        auto update() -> GameScreen {
-            auto next_screen = GameScreen::Gameplay;
+        auto update() -> GameScreenType {
+            auto next_screen = GameScreenType::Gameplay;
 
             update_score_text();
             update_player_movement();
@@ -108,18 +108,18 @@ namespace gameplay_screen {
             draw_text(registry);
         }
 
-        auto id() -> GameScreen {
-            return GameScreen::Gameplay;
+        auto id() -> GameScreenType {
+            return GameScreenType::Gameplay;
         }
 
     private:
-        auto process_inputs() -> GameScreen {
+        auto process_inputs() -> GameScreenType {
             if (IsKeyPressed(KEY_ESCAPE)) {
                 registry.clear();
                 // load_main_menu_screen();
-                return GameScreen::MainMenu;
+                return GameScreenType::MainMenu;
             }
-            return GameScreen::Gameplay;
+            return GameScreenType::Gameplay;
         }
 
         void receive_enemy_hit_events() {
