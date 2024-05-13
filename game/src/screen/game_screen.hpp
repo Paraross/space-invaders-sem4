@@ -9,6 +9,7 @@ namespace game_screen {
     };
 
     struct Screen {
+        virtual void load() = 0;
         virtual auto update() -> GameScreen = 0;
         virtual void draw() = 0;
         virtual auto id() -> GameScreen = 0;

@@ -30,21 +30,20 @@ namespace game {
     public:
         Game() {
             current_screen = &main_menu_screen;
-
-            load_main_menu_screen();
+            current_screen->load();
         }
 
         void update() {
-            auto next_screen_id = update_current_screen();
+            auto next_screen_id = current_screen->update();
 
             // load next screen
             // unload prev screen
             if (next_screen_id != current_screen->id()) {
                 std::cout << "--- screen changed from " << (int)current_screen->id() << " to " << (int)next_screen_id << " ---\n";
                 if (next_screen_id == GameScreen::MainMenu) {
-                    load_main_menu_screen();
+                    main_menu_screen.load();
                 } else if (next_screen_id == GameScreen::Gameplay) {
-                    load_gameplay_screen();
+                    gameplay_screen.load();
                 }
             }
 
@@ -68,18 +67,6 @@ namespace game {
         }
 
     private:
-        void load_main_menu_screen() {
-            main_menu_screen = MainMenuScreen();
-        }
-        
-        void load_gameplay_screen() {
-            gameplay_screen = GameplayScreen();
-        }
-
-        auto update_current_screen() -> GameScreen {
-            return current_screen->update();
-        }
-
         void change_current_screen(GameScreen next_screen_id) {
             if (next_screen_id == GameScreen::MainMenu) {
                 current_screen = &main_menu_screen;

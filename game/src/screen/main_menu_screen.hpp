@@ -12,6 +12,14 @@ namespace main_menu_screen {
         entt::registry registry;
 
     public:
+        MainMenuScreen() {
+
+        }
+
+        void load() {
+
+        }
+
         auto update() -> GameScreen {
             auto next_screen = GameScreen::MainMenu;
 

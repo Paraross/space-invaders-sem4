@@ -19,7 +19,9 @@ namespace gameplay_screen {
     public:
         GameplayScreen() {
             keybinds.read_from_file("keybinds.txt");
+        }
 
+        void load() {
             //+ score
             auto score = registry.create();
             registry.emplace<TheScoreComp>(score);
