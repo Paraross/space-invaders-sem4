@@ -28,7 +28,7 @@ namespace main_menu_screen {
         auto process_inputs() -> GameScreen {
             if (IsKeyPressed(KEY_ENTER)) {
                 return GameScreen::Gameplay;
-                // init_gameplay_screen();
+                // load_gameplay_screen();
             }
             return GameScreen::MainMenu;
         }
