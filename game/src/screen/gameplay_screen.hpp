@@ -152,18 +152,17 @@ namespace gameplay_screen {
             auto &velocity = player_view.get<VelocityComp>(player).velocity;
             velocity = glm::vec2(0.0f, 0.0f);
 
-            // if (keybinds.move_right.is_down()) {
             if (keybinds.action(InputAction::MoveRight).is_down()) {
-                velocity.x = speed;
+                velocity.x += speed;
             }
             if (keybinds.action(InputAction::MoveLeft).is_down()) {
-                velocity.x = -speed;
+                velocity.x -= speed;
             }
             if (keybinds.action(InputAction::MoveUp).is_down()) {
-                velocity.y = -speed;
+                velocity.y -= speed;
             }
             if (keybinds.action(InputAction::MoveDown).is_down()) {
-                velocity.y = speed;
+                velocity.y += speed;
             }
         }
 
