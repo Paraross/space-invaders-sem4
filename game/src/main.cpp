@@ -11,6 +11,7 @@ int main() {
     auto game = game::Game();
 
     SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+    SetExitKey(KEY_NULL);
 
     while (!WindowShouldClose()) {
         game.update();
