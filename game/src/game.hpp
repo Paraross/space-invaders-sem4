@@ -18,37 +18,37 @@ namespace game {
     using input::Keybinds;
     using input::InputAction;
     using game_screen::GameScreen;
+    using game_screen::Screen;
     using main_menu_screen::MainMenuScreen;
     using gameplay_screen::GameplayScreen;
 
     class Game {
-        // entt::registry registry;
-        Keybinds keybinds;
         MainMenuScreen main_menu_screen;
         GameplayScreen gameplay_screen;
-        GameScreen current_screen;
+        Screen *current_screen;
 
     public:
         Game() {
-            load_inital_boot();
-            // keybinds.write_to_file("keybinds.txt");
+            current_screen = &main_menu_screen;
+
+            load_main_menu_screen();
         }
 
         void update() {
-            auto next_screen = update_current_screen();
+            auto next_screen_id = update_current_screen();
 
             // load next screen
             // unload prev screen
-            if (next_screen != current_screen) {
-                std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
-                if (next_screen == GameScreen::MainMenu) {
+            if (next_screen_id != current_screen->id()) {
+                std::cout << "--- screen changed from " << (int)current_screen->id() << " to " << (int)next_screen_id << " ---\n";
+                if (next_screen_id == GameScreen::MainMenu) {
                     load_main_menu_screen();
-                } else if (next_screen == GameScreen::Gameplay) {
+                } else if (next_screen_id == GameScreen::Gameplay) {
                     load_gameplay_screen();
                 }
             }
 
-            current_screen = next_screen;
+            change_current_screen(next_screen_id);
         }
 
         void draw() {
@@ -62,24 +62,12 @@ namespace game {
 
             // DrawFPS(10, 10);
 
-            if (current_screen == GameScreen::MainMenu) {
-                main_menu_screen.draw();
-            } else if (current_screen == GameScreen::Gameplay) {
-                gameplay_screen.draw();
-            }
+            current_screen->draw();
 
             EndDrawing();
         }
 
     private:
-        void load_inital_boot() {
-            keybinds.read_from_file("keybinds.txt");
-
-            current_screen = GameScreen::MainMenu;
-
-            load_main_menu_screen();
-        }
-
         void load_main_menu_screen() {
             main_menu_screen = MainMenuScreen();
         }
@@ -89,12 +77,16 @@ namespace game {
         }
 
         auto update_current_screen() -> GameScreen {
-            if (current_screen == GameScreen::MainMenu) {
-                return main_menu_screen.update();
-            } else if (current_screen == GameScreen::Gameplay) {
-                return gameplay_screen.update();
+            return current_screen->update();
+        }
+
+        void change_current_screen(GameScreen next_screen_id) {
+            if (next_screen_id == GameScreen::MainMenu) {
+                current_screen = &main_menu_screen;
+            } else if (next_screen_id == GameScreen::Gameplay) {
+                current_screen = &gameplay_screen;
             } else {
-                throw std::exception("Tried to update a screen that is not the current screen.");
+                throw std::exception("Tried to change to invalid screen.");
             }
         }
     };

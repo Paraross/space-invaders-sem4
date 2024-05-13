@@ -10,13 +10,16 @@ namespace gameplay_screen {
     using input::Keybinds;
     using input::InputAction;
     using game_screen::GameScreen;
+    using game_screen::Screen;
 
-    class GameplayScreen {
+    class GameplayScreen : public Screen {
         entt::registry registry;
         Keybinds keybinds;
 
     public:
         GameplayScreen() {
+            keybinds.read_from_file("keybinds.txt");
+
             //+ score
             auto score = registry.create();
             registry.emplace<TheScoreComp>(score);
@@ -101,6 +104,10 @@ namespace gameplay_screen {
         void draw() {
             draw_color_rectangles(registry);
             draw_text(registry);
+        }
+
+        auto id() -> GameScreen {
+            return GameScreen::Gameplay;
         }
 
     private:

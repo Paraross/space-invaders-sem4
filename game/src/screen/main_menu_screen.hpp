@@ -6,8 +6,9 @@
 
 namespace main_menu_screen {
     using game_screen::GameScreen;
+    using game_screen::Screen;
 
-    class MainMenuScreen {
+    class MainMenuScreen : public Screen {
         entt::registry registry;
 
     public:
@@ -22,6 +23,10 @@ namespace main_menu_screen {
 
         void draw() {
             draw_main_menu_screen(registry);
+        }
+
+        auto id() -> GameScreen {
+            return GameScreen::MainMenu;
         }
 
     private:
