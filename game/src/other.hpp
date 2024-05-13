@@ -5,10 +5,11 @@
 #include "raylib.h"
 #include "vec2.hpp"
 
-// struct PositionComp {
-//     float x;
-//     float y;
-// };
+struct PlayerComp {};
+
+struct EnemyComp {};
+
+struct BulletComp {};
 
 struct RectangleComp {
     Rectangle rect;
