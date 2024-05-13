@@ -195,8 +195,17 @@ namespace input {
 
                 auto token_count = std::ranges::distance(tokens);
                 
+                // ill-formed line
                 if (token_count != 4) {
-                    // ill-formed line
+                    std::cout << "--- line " << i + 1 << ". is ill-formed ---\n";
+                    std::cout << "--- \"" << line << "\" ---\n";
+
+                    std::cout << "--- assigning default keybinds ---\n";
+                    //todo default only the keybind corresponding to the improper line, leave rest
+                    //todo make default keybinds into a vector or something
+                    *this = default_keybinds();
+
+                    return;
                 }
 
                 auto tokens_iter = tokens.begin();
@@ -217,7 +226,7 @@ namespace input {
                 keybinds[i] = keybind;
             }
 
-            std::cout << "--- keybinds loaded from file: \"" << file_name << "\" ---\n";
+            std::cout << "--- keybinds successfully loaded from file: \"" << file_name << "\" ---\n";
         }
 
         void write_to_file(const char *file_name) const {
