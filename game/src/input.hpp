@@ -154,6 +154,8 @@ namespace input {
             return Keybinds(std::move(keybinds));
         }
 
+        //todo istead of this, make `is_pressed(InputAction)`, and so on
+        //todo so the usage is like `keybinds.is_pressed(Shoot)`
         auto action(InputAction action) const -> const Keybind & {
             return keybinds[(size_t)action];
         }

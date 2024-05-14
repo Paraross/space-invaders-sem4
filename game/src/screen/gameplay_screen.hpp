@@ -138,7 +138,7 @@ namespace gameplay_screen {
                 text_pos.y += (font_size + 5.0f) * text_count;
 
                 auto text_stream = std::stringstream();
-                text_stream << text_count << " Hit pos: (" << hit_pos.x << ", " << hit_pos.y << ")";
+                // text_stream << text_count << " Hit pos: (" << hit_pos.x << ", " << hit_pos.y << ")";
                 auto text = text_stream.str();
 
                 auto text_entity = registry.create();
