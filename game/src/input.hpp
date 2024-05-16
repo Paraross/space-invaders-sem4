@@ -235,8 +235,7 @@ namespace input {
                     std::cout << "--- line " << i + 1 << ". is ill-formed ---\n";
                     std::cout << "--- \"" << line << "\" ---\n";
 
-                    std::cout << "--- assigning default keybinds ---\n";
-                    //todo default only the keybind corresponding to the improper line, leave rest
+                    std::cout << "--- assigning default keybind ---\n";
                     keybinds[i] = default_keybinds()[i];
 
                     continue;
