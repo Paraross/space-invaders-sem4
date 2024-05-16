@@ -161,16 +161,16 @@ namespace gameplay_screen {
             auto &velocity = player_view.get<VelocityComp>(player).velocity;
             velocity = glm::vec2(0.0f, 0.0f);
 
-            if (keybinds.action(InputAction::MoveRight).is_down()) {
+            if (keybinds.is_down(InputAction::MoveRight)) {
                 velocity.x += speed;
             }
-            if (keybinds.action(InputAction::MoveLeft).is_down()) {
+            if (keybinds.is_down(InputAction::MoveLeft)) {
                 velocity.x -= speed;
             }
-            if (keybinds.action(InputAction::MoveUp).is_down()) {
+            if (keybinds.is_down(InputAction::MoveUp)) {
                 velocity.y -= speed;
             }
-            if (keybinds.action(InputAction::MoveDown).is_down()) {
+            if (keybinds.is_down(InputAction::MoveDown)) {
                 velocity.y += speed;
             }
         }
@@ -185,7 +185,7 @@ namespace gameplay_screen {
             auto &fire_cd = fire_cd_comp.fire_cooldown;
             const auto &max_fire_cd = fire_cd_comp.max_fire_cooldown;
 
-            if (!keybinds.action(InputAction::Shoot).is_down() || fire_cd != 0.0f) {
+            if (!keybinds.is_down(InputAction::Shoot) || fire_cd != 0.0f) {
                 return;
             }
 

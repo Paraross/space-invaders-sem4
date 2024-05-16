@@ -154,10 +154,20 @@ namespace input {
             return Keybinds(std::move(keybinds));
         }
 
-        //todo istead of this, make `is_pressed(InputAction)`, and so on
-        //todo so the usage is like `keybinds.is_pressed(Shoot)`
-        auto action(InputAction action) const -> const Keybind & {
-            return keybinds[(size_t)action];
+        auto is_down(InputAction action) -> bool {
+            return keybinds[(size_t)action].is_down();
+        }
+
+        auto is_up(InputAction action) -> bool {
+            return keybinds[(size_t)action].is_up();
+        }
+
+        auto is_pressed(InputAction action) -> bool {
+            return keybinds[(size_t)action].is_pressed();
+        }
+
+        auto is_released(InputAction action) -> bool {
+            return keybinds[(size_t)action].is_released();
         }
 
         void read_from_file(const char *file_name) {
