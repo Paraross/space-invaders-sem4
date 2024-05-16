@@ -132,7 +132,7 @@ namespace input {
     };
 
     class Keybinds {
-        std::vector<Keybind> keybinds; // hash map? nah, i'll pass
+        std::vector<Keybind> keybinds;
 
     public:
         Keybinds() {
@@ -142,7 +142,7 @@ namespace input {
         Keybinds(std::vector<Keybind> keybinds)
             : keybinds(keybinds) {}
 
-        static auto default_keybinds() -> Keybinds {
+        static auto default_keybinds() -> std::vector<Keybind> {
             auto keybinds = std::vector<Keybind>();
             keybinds.resize((size_t)InputAction::EnumSize);
 
@@ -152,7 +152,7 @@ namespace input {
             keybinds[(size_t)InputAction::MoveDown] = Keybind(KEY_S, KEY_DOWN);
             keybinds[(size_t)InputAction::Shoot] = Keybind(MOUSE_BUTTON_LEFT, KEY_SPACE);
 
-            return Keybinds(std::move(keybinds));
+            return keybinds;
         }
 
         auto is_down(InputAction action) -> bool {
@@ -180,7 +180,7 @@ namespace input {
 
                 std::cout << "--- keybinds file not found ---\n";
                 std::cout << "--- assigning default keybinds ---\n";
-                *this = default_keybinds();
+                keybinds = default_keybinds();
 
                 std::cout << "--- generating keybinds file ---\n";
                 write_to_file(new_keybinds_file_name);
@@ -237,10 +237,9 @@ namespace input {
 
                     std::cout << "--- assigning default keybinds ---\n";
                     //todo default only the keybind corresponding to the improper line, leave rest
-                    //todo make default keybinds into a vector or something
-                    *this = default_keybinds();
+                    keybinds[i] = default_keybinds()[i];
 
-                    return;
+                    continue;
                 }
 
                 auto tokens_iter = tokens.begin();
