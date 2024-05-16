@@ -176,7 +176,7 @@ namespace input {
             auto file_path = current_dir / file_name;
 
             if (!fs::exists(file_path)) {
-                auto new_keybinds_file_name = "keybinds.txt";
+                auto new_keybinds_file_name = file_name;
 
                 std::cout << "--- keybinds file not found ---\n";
                 std::cout << "--- assigning default keybinds ---\n";
