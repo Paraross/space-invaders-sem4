@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <filesystem>
 #include <iterator>
 #include <ranges>
 #include <exception>
@@ -11,7 +12,7 @@
 #include "raylib.h"
 
 namespace input {
-    // auto string_to_input_type(std::string_view str) -> InputType;
+    namespace fs = std::filesystem;
 
     enum class InputType {
         Keyboard,
@@ -171,9 +172,10 @@ namespace input {
         }
 
         void read_from_file(const char *file_name) {
-            auto file = std::ifstream(file_name);
+            auto current_dir = fs::current_path();
+            auto file_path = current_dir / file_name;
 
-            if (file.fail()) {
+            if (!fs::exists(file_path)) {
                 auto new_keybinds_file_name = "keybinds.txt";
 
                 std::cout << "--- keybinds file not found ---\n";
@@ -189,6 +191,27 @@ namespace input {
 
             std::cout << "--- keybinds file found ---\n";
 
+            read_and_parse_from_file(file_path);
+
+            std::cout << "--- keybinds successfully loaded from file: \"" << file_name << "\" ---\n";
+        }
+
+        void write_to_file(const char *file_name) const {
+            auto current_dir = fs::current_path();
+            auto file_path = current_dir / file_name;
+
+            auto file = std::ofstream(file_path);
+
+            for (const auto &keybind : keybinds) {
+                file << keybind.as_string() << '\n';
+            }
+
+            file.close();
+        }
+
+    private:
+        void read_and_parse_from_file(fs::path file_path) {
+            auto file = std::ifstream(file_path);
             auto file_content = std::string(std::istreambuf_iterator<char>(file), {});
 
             auto lines = file_content
@@ -237,19 +260,6 @@ namespace input {
 
                 keybinds[i] = keybind;
             }
-
-            std::cout << "--- keybinds successfully loaded from file: \"" << file_name << "\" ---\n";
-        }
-
-        void write_to_file(const char *file_name) const {
-            auto file = std::ofstream(file_name);
-
-            for (const auto &keybind : keybinds) {
-                auto keybind_str = keybind.as_string();
-
-                file << keybind_str << '\n';
-            }
-
             file.close();
         }
     };
