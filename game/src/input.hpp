@@ -13,6 +13,8 @@
 
 namespace input {
     namespace fs = std::filesystem;
+    namespace ranges = std::ranges;
+    namespace views = std::ranges::views;
 
     enum class InputType {
         Keyboard,
@@ -215,20 +217,20 @@ namespace input {
             auto file_content = std::string(std::istreambuf_iterator<char>(file), {});
 
             auto lines = file_content
-                | std::ranges::views::split('\n')
-                | std::ranges::views::transform([](auto &&str) { return std::string_view(str); });
+                | views::split('\n')
+                | views::transform([](auto &&str) { return std::string_view(str); });
 
-            for (auto [i, line] : lines | std::ranges::views::enumerate) {
+            for (auto [i, line] : lines | views::enumerate) {
                 // skip last line
                 if (line.empty()) {
                     break;
                 }
 
                 auto tokens = line
-                    | std::ranges::views::split(' ')
-                    | std::ranges::views::transform([](auto &&str) { return std::string_view(str); });
+                    | views::split(' ')
+                    | views::transform([](auto &&str) { return std::string_view(str); });
 
-                auto token_count = std::ranges::distance(tokens);
+                auto token_count = ranges::distance(tokens);
                 
                 // ill-formed line
                 if (token_count != 4) {
@@ -244,11 +246,11 @@ namespace input {
                 auto tokens_iter = tokens.begin();
 
                 auto first_type = string_to_input_type(*tokens_iter);
-                std::ranges::advance(tokens_iter, 1);
+                ranges::advance(tokens_iter, 1);
                 auto first_value = std::stoi(std::string(*tokens_iter));
-                std::ranges::advance(tokens_iter, 1);
+                ranges::advance(tokens_iter, 1);
                 auto second_type = string_to_input_type(*tokens_iter);
-                std::ranges::advance(tokens_iter, 1);
+                ranges::advance(tokens_iter, 1);
                 auto second_value = std::stoi(std::string(*tokens_iter));
 
                 auto input1 = Input(first_type == InputType::Keyboard ? Input((KeyboardKey)first_value) : Input((MouseButton)first_value));
