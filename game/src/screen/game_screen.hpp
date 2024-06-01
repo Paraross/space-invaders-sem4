@@ -5,7 +5,7 @@ namespace game_screen {
         MainMenu,
         // Settings,
         Gameplay,
-        // GameplayPause,
+        Pause,
     };
 
     struct Screen {

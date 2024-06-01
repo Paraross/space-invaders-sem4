@@ -13,6 +13,7 @@
 #include "screen/game_screen.hpp"
 #include "screen/main_menu_screen.hpp"
 #include "screen/gameplay_screen.hpp"
+#include "screen/pause_screen.hpp"
 
 namespace game {
     using input::Keybinds;
@@ -21,10 +22,12 @@ namespace game {
     using game_screen::Screen;
     using main_menu_screen::MainMenuScreen;
     using gameplay_screen::GameplayScreen;
+    using pause_screen::PauseScreen;
 
     class Game {
         MainMenuScreen main_menu_screen;
         GameplayScreen gameplay_screen;
+        PauseScreen pause_screen;
         Screen *current_screen;
 
     public:
@@ -44,6 +47,8 @@ namespace game {
                     main_menu_screen.load();
                 } else if (next_screen_id == GameScreenType::Gameplay) {
                     gameplay_screen.load();
+                } else if (next_screen_id == GameScreenType::Pause) {
+                    pause_screen.load();
                 }
             }
 
@@ -72,6 +77,8 @@ namespace game {
                 current_screen = &main_menu_screen;
             } else if (next_screen_id == GameScreenType::Gameplay) {
                 current_screen = &gameplay_screen;
+            } else if (next_screen_id == GameScreenType::Pause) {
+                current_screen = &pause_screen;
             } else {
                 throw std::exception("Tried to change to invalid screen.");
             }

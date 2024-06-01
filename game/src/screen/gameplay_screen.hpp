@@ -116,8 +116,7 @@ namespace gameplay_screen {
         auto process_inputs() -> GameScreenType {
             if (IsKeyPressed(KEY_ESCAPE)) {
                 registry.clear();
-                // load_main_menu_screen();
-                return GameScreenType::MainMenu;
+                return GameScreenType::Pause;
             }
             return GameScreenType::Gameplay;
         }

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "raylib.h"
 #include "entt.hpp"
 
 #include "screen/game_screen.hpp"
+#include "utils.hpp"
 
 namespace main_menu_screen {
     using game_screen::GameScreenType;
@@ -29,7 +31,7 @@ namespace main_menu_screen {
         }
 
         void draw() {
-            DrawText("Main Menu", GetScreenWidth() / 2, GetScreenHeight() / 2, 40, BLACK);
+            DrawTextCentered("Main Menu", GetScreenWidth() / 2, GetScreenHeight() / 2, 40, BLACK);
         }
 
         auto id() -> GameScreenType {
@@ -39,8 +41,8 @@ namespace main_menu_screen {
     private:
         auto process_inputs() -> GameScreenType {
             if (IsKeyPressed(KEY_ENTER)) {
+                registry.clear();
                 return GameScreenType::Gameplay;
-                // load_gameplay_screen();
             }
             return GameScreenType::MainMenu;
         }
