@@ -31,7 +31,7 @@ namespace gameplay_screen {
             //+ player
             auto player = registry.create();
             registry.emplace<PlayerComp>(player);
-            registry.emplace<RectangleComp>(player, GetScreenWidth() / 2.0f, GetScreenHeight() - 90.0f, 40.0f, 40.0f);
+            registry.emplace<RectangleComp>(player, half_screen_width(), GetScreenHeight() - 90.0f, 40.0f, 40.0f);
             registry.emplace<VelocityComp>(player, glm::vec2(0.0f, 0.0f));
             registry.emplace<MaxSpeedComp>(player, 1000.0f);
             registry.emplace<FireCooldownComp>(player, 0.2f);

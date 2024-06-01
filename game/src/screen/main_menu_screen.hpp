@@ -31,7 +31,7 @@ namespace main_menu_screen {
         }
 
         void draw() {
-            DrawTextCentered("Main Menu", GetScreenWidth() / 2, GetScreenHeight() / 2, 40, BLACK);
+            DrawTextCentered("Main Menu", (int)half_screen_width(), half_screen_height(), 40, BLACK);
         }
 
         auto id() -> GameScreenType {

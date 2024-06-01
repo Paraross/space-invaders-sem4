@@ -25,9 +25,9 @@ namespace pause_screen {
             auto inner_box = registry.create();
 
             auto box = Rectangle();
-            box.height = (float)GetScreenHeight() / 2.0f;
-            box.width = (float)GetScreenWidth() / 2.0f;
-            center_rect_pos(box, glm::vec2(GetScreenWidth() / 2, GetScreenHeight() / 2));
+            box.height = (float)half_screen_height();
+            box.width = half_screen_width();
+            center_rect_pos(box, glm::vec2(half_screen_width(), half_screen_height()));
 
             registry.emplace<RectangleComp>(inner_box, box.x, box.y, box.width, box.height);
             registry.emplace<ColorComp>(inner_box, WHITE);
@@ -35,9 +35,9 @@ namespace pause_screen {
             auto outer_box = registry.create();
 
             auto box2 = Rectangle();
-            box2.height = GetScreenHeight() / 2 + 20.0f;
-            box2.width = GetScreenWidth() / 2 + 20.0f;
-            center_rect_pos(box2, glm::vec2(GetScreenWidth() / 2, GetScreenHeight() / 2));
+            box2.height = half_screen_height() + 20.0f;
+            box2.width = half_screen_width() + 20.0f;
+            center_rect_pos(box2, glm::vec2(half_screen_width(), half_screen_height()));
 
             registry.emplace<RectangleComp>(outer_box, box2.x, box2.y, box2.width, box2.height);
             registry.emplace<ColorComp>(outer_box, BLACK);
@@ -57,7 +57,7 @@ namespace pause_screen {
             auto pause_text = "Pause Menu";
             auto font_size = 40;
 
-            DrawTextCentered(pause_text, GetScreenWidth() / 2, GetScreenHeight() / 2, font_size, BLACK);
+            DrawTextCentered(pause_text, (int)half_screen_width(), half_screen_height(), font_size, BLACK);
         }
 
         auto id() -> GameScreenType {

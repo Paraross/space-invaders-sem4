@@ -25,9 +25,9 @@ void DrawTextCentered(const char *text, int pos_x, int pos_y, int font_size, Col
 }
 
 auto half_screen_width() -> float {
-    return GetScreenWidth() / 2.0f;
+    return (float)GetScreenWidth() / 2.0f;
 }
 
 auto half_screen_height() -> float {
-    return GetScreenHeight() / 2.0f;
+    return (float)GetScreenHeight() / 2.0f;
 }
