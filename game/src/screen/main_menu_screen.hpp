@@ -11,8 +11,6 @@ namespace main_menu_screen {
     using game_screen::Screen;
 
     class MainMenuScreen : public Screen {
-        entt::registry registry;
-
     public:
         MainMenuScreen() {
             
@@ -20,6 +18,10 @@ namespace main_menu_screen {
 
         void load() {
 
+        }
+
+        void unload() {
+            
         }
 
         auto update() -> GameScreenType {
@@ -31,7 +33,7 @@ namespace main_menu_screen {
         }
 
         void draw() {
-            DrawTextCentered("Main Menu", (int)half_screen_width(), half_screen_height(), 40, BLACK);
+            DrawTextCentered("Main Menu", (int)half_screen_width(), (int)half_screen_height(), 40, BLACK);
         }
 
         auto id() -> GameScreenType {
@@ -41,7 +43,6 @@ namespace main_menu_screen {
     private:
         auto process_inputs() -> GameScreenType {
             if (IsKeyPressed(KEY_ENTER)) {
-                registry.clear();
                 return GameScreenType::Gameplay;
             }
             return GameScreenType::MainMenu;

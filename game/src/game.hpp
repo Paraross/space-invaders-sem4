@@ -37,20 +37,16 @@ namespace game {
         }
 
         void update() {
+            auto current_screen_id = current_screen->id();
             auto next_screen_id = current_screen->update();
 
-            // load next screen
-            // unload prev screen
-            if (next_screen_id != current_screen->id()) {
-                std::cout << "--- screen changed from " << (int)current_screen->id() << " to " << (int)next_screen_id << " ---\n";
-                if (next_screen_id == GameScreenType::MainMenu) {
-                    main_menu_screen.load();
-                } else if (next_screen_id == GameScreenType::Gameplay) {
-                    gameplay_screen.load();
-                } else if (next_screen_id == GameScreenType::Pause) {
-                    pause_screen.load();
-                }
+            if (next_screen_id == current_screen_id) {
+                return;
             }
+
+            std::cout << "--- screen changed from " << (int)current_screen->id() << " to " << (int)next_screen_id << " ---\n";
+
+            transition_to_other_screen(next_screen_id);
 
             change_current_screen(next_screen_id);
         }
@@ -66,12 +62,31 @@ namespace game {
 
             // DrawFPS(10, 10);
 
+            if (current_screen->id() == GameScreenType::Pause) {
+                gameplay_screen.draw();
+            }
             current_screen->draw();
 
             EndDrawing();
         }
 
     private:
+        void transition_to_other_screen(GameScreenType next_screen_id) {
+            if (next_screen_id == GameScreenType::MainMenu) {
+                main_menu_screen.load();
+                gameplay_screen.unload();
+                pause_screen.unload();
+            } else if (next_screen_id == GameScreenType::Gameplay) {
+                gameplay_screen.load();
+                main_menu_screen.unload();
+                pause_screen.unload();
+            } else if (next_screen_id == GameScreenType::Pause) {
+                pause_screen.load();
+                main_menu_screen.unload();
+                // don't unload gameplay
+            }
+        }
+
         void change_current_screen(GameScreenType next_screen_id) {
             if (next_screen_id == GameScreenType::MainMenu) {
                 current_screen = &main_menu_screen;

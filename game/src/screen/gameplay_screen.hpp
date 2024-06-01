@@ -15,13 +15,19 @@ namespace gameplay_screen {
     class GameplayScreen : public Screen {
         entt::registry registry;
         Keybinds keybinds;
+        bool is_loaded;
 
     public:
         GameplayScreen() {
+            is_loaded = false;
             keybinds.read_from_file("keybinds.txt");
         }
 
         void load() {
+            if (is_loaded) {
+                return;
+            }
+
             //+ score
             auto score = registry.create();
             registry.emplace<TheScoreComp>(score);
@@ -80,6 +86,14 @@ namespace gameplay_screen {
                 registry.emplace<FireCooldownComp>(enemy, 2.0f);
                 // registry.emplace<ScoreComp>(enemy, 1);
             }
+
+            is_loaded = true;
+        }
+
+        void unload() {
+            registry.clear();
+
+            is_loaded = false;
         }
 
         auto update() -> GameScreenType {
@@ -115,7 +129,6 @@ namespace gameplay_screen {
     private:
         auto process_inputs() -> GameScreenType {
             if (IsKeyPressed(KEY_ESCAPE)) {
-                registry.clear();
                 return GameScreenType::Pause;
             }
             return GameScreenType::Gameplay;

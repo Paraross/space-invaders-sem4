@@ -15,13 +15,18 @@ namespace pause_screen {
 
     class PauseScreen : public Screen {
         entt::registry registry;
+        bool is_loaded;
 
     public:
         PauseScreen() {
-            
+            is_loaded = false;
         }
 
         void load() {
+            if (is_loaded) {
+                return;
+            }
+
             auto inner_box = registry.create();
 
             auto box = Rectangle();
@@ -30,10 +35,11 @@ namespace pause_screen {
             center_rect_pos(box, glm::vec2(half_screen_width(), half_screen_height()));
 
             registry.emplace<RectangleComp>(inner_box, box.x, box.y, box.width, box.height);
-            registry.emplace<ColorComp>(inner_box, WHITE);
+            registry.emplace<ColorComp>(inner_box, WHITE); // TODO: BLANK
 
             auto outer_box = registry.create();
 
+            // TODO: make this shit into 4 rectangles at the edges so the interior can be transparent
             auto box2 = Rectangle();
             box2.height = half_screen_height() + 20.0f;
             box2.width = half_screen_width() + 20.0f;
@@ -41,6 +47,14 @@ namespace pause_screen {
 
             registry.emplace<RectangleComp>(outer_box, box2.x, box2.y, box2.width, box2.height);
             registry.emplace<ColorComp>(outer_box, BLACK);
+        
+            is_loaded = true;
+        }
+
+        void unload() {
+            registry.clear();
+        
+            is_loaded = false;
         }
 
         auto update() -> GameScreenType {
@@ -57,7 +71,7 @@ namespace pause_screen {
             auto pause_text = "Pause Menu";
             auto font_size = 40;
 
-            DrawTextCentered(pause_text, (int)half_screen_width(), half_screen_height(), font_size, BLACK);
+            DrawTextCentered(pause_text, (int)half_screen_width(), (int)half_screen_height(), font_size, BLACK);
         }
 
         auto id() -> GameScreenType {
@@ -67,7 +81,6 @@ namespace pause_screen {
     private:
         auto process_inputs() -> GameScreenType {
             if (IsKeyPressed(KEY_ESCAPE)) {
-                registry.clear();
                 return GameScreenType::Gameplay;
             }
             if (IsKeyPressed(KEY_ENTER)) {
