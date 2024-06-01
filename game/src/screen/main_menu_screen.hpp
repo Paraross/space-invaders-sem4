@@ -23,14 +23,13 @@ namespace main_menu_screen {
         auto update() -> GameScreenType {
             auto next_screen = GameScreenType::MainMenu;
 
-            draw_main_menu_screen(registry);
             next_screen = process_inputs();
 
             return next_screen;
         }
 
         void draw() {
-            draw_main_menu_screen(registry);
+            DrawText("Main Menu", GetScreenWidth() / 2, GetScreenHeight() / 2, 40, BLACK);
         }
 
         auto id() -> GameScreenType {
