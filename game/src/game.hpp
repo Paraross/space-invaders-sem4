@@ -47,8 +47,6 @@ namespace game {
             std::cout << "--- screen changed from " << (int)current_screen->id() << " to " << (int)next_screen_id << " ---\n";
 
             transition_to_other_screen(next_screen_id);
-
-            change_current_screen(next_screen_id);
         }
 
         void draw() {
@@ -76,23 +74,19 @@ namespace game {
                 main_menu_screen.load();
                 gameplay_screen.unload();
                 pause_screen.unload();
+
+                current_screen = &main_menu_screen;
             } else if (next_screen_id == GameScreenType::Gameplay) {
                 gameplay_screen.load();
                 main_menu_screen.unload();
                 pause_screen.unload();
+
+                current_screen = &gameplay_screen;
             } else if (next_screen_id == GameScreenType::Pause) {
                 pause_screen.load();
                 main_menu_screen.unload();
                 // don't unload gameplay
-            }
-        }
 
-        void change_current_screen(GameScreenType next_screen_id) {
-            if (next_screen_id == GameScreenType::MainMenu) {
-                current_screen = &main_menu_screen;
-            } else if (next_screen_id == GameScreenType::Gameplay) {
-                current_screen = &gameplay_screen;
-            } else if (next_screen_id == GameScreenType::Pause) {
                 current_screen = &pause_screen;
             } else {
                 throw std::exception("Tried to change to invalid screen.");
