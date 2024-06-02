@@ -47,16 +47,7 @@ namespace game {
         void update() {
             auto next_screen = current_screen_ptr()->update();
 
-            if (next_screen == current_screen) {
-                return;
-            }
-
-            std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
-
-            // auto transition = Transition(current_screen, next_screen);
-            // transition_to_other_screen(transition);
-
-            transition_to_other_screen(next_screen);
+            transition_screen(next_screen);
         }
 
         void draw() {
@@ -84,7 +75,11 @@ namespace game {
             return screen_ptrs[(size_t)current_screen];
         }
 
-        void transition_to_other_screen(GameScreenType next_screen) {
+        void transition_screen(GameScreenType next_screen) {
+            if (next_screen == current_screen) {
+                return;
+            }
+
             if (next_screen == GameScreenType::MainMenu) {
                 main_menu_screen.load();
                 gameplay_screen.unload();
@@ -102,6 +97,8 @@ namespace game {
             }
 
             current_screen = next_screen;
+
+            std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
         }
     };
 }
