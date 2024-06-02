@@ -25,27 +25,97 @@ namespace game {
     using gameplay_screen::GameplayScreen;
     using pause_screen::PauseScreen;
 
+    enum class ScreenState {
+        Active,
+        Inactive,
+        Unloaded,
+    };
+    
+    struct ScreenData {
+        Screen *screen;
+        ScreenState state;
+
+        ScreenData() = default;
+        
+        ScreenData(Screen *screen) {
+            this->screen = screen;
+            this->state = ScreenState::Unloaded;
+        }
+
+        void activate() {
+            if (state == ScreenState::Unloaded) {
+                return;
+            }
+            state = ScreenState::Active;
+        }
+
+        void load() {
+            if (state == ScreenState::Unloaded) {
+                screen->load();
+                state = ScreenState::Inactive;
+            }
+        }
+
+        void unload() {
+            if (state == ScreenState::Unloaded) {
+                return;
+            }
+            screen->unload();
+            state = ScreenState::Unloaded;
+        }
+
+        auto update() -> GameScreenType {
+            if (state == ScreenState::Active) {
+                return screen->update();
+            }
+            return screen->id();
+        }
+
+        void draw() {
+            if (state == ScreenState::Unloaded) {
+                return;
+            }
+            screen->draw();
+        }
+    };
+
     class Game {
         MainMenuScreen main_menu_screen;
         GameplayScreen gameplay_screen;
         PauseScreen pause_screen;
         GameScreenType current_screen;
 
-        std::array<Screen *, 3> screen_ptrs;
+        std::array<ScreenData, 3> screen_ptrs;
 
+        auto current_screen_ptr() -> ScreenData & {
+            return screen_ptrs[(size_t)current_screen];
+        }
+
+        auto main_menu() -> ScreenData & {
+            return screen_ptrs[(size_t)GameScreenType::MainMenu];
+        }
+
+        auto gameplay() -> ScreenData & {
+            return screen_ptrs[(size_t)GameScreenType::Gameplay];
+        }
+
+        auto pause_menu() -> ScreenData & {
+            return screen_ptrs[(size_t)GameScreenType::Pause];
+        }
     public:
         Game() {
             current_screen = GameScreenType::MainMenu;
 
-            screen_ptrs[(size_t)GameScreenType::MainMenu] = &main_menu_screen;
-            screen_ptrs[(size_t)GameScreenType::Gameplay] = &gameplay_screen;
-            screen_ptrs[(size_t)GameScreenType::Pause] = &pause_screen;
+            main_menu() = ScreenData(&main_menu_screen);
+            gameplay() = ScreenData(&gameplay_screen);
+            pause_menu() = ScreenData(&pause_screen);
 
-            current_screen_ptr()->load();
+            current_screen_ptr().load();
+            current_screen_ptr().activate();
         }
 
         void update() {
-            auto next_screen = current_screen_ptr()->update();
+            auto next_screen = current_screen_ptr().update();
 
             transition_screen(next_screen);
         }
@@ -61,42 +131,42 @@ namespace game {
 
             // DrawFPS(10, 10);
 
-            if (current_screen == GameScreenType::Pause) {
-                gameplay_screen.draw();
+            // if (current_screen == GameScreenType::Pause) {
+            //     gameplay_screen.draw();
+            // }
+            // current_screen_ptr().draw();
+
+            for (auto screen : screen_ptrs) {
+                screen.draw();
             }
-            current_screen_ptr()->draw();
 
             EndDrawing();
         }
 
     private:
-        auto current_screen_ptr() -> Screen * {
-            // either this or ifs
-            return screen_ptrs[(size_t)current_screen];
-        }
-
         void transition_screen(GameScreenType next_screen) {
             if (next_screen == current_screen) {
                 return;
             }
 
             if (next_screen == GameScreenType::MainMenu) {
-                main_menu_screen.load();
-                gameplay_screen.unload();
-                pause_screen.unload();
+                main_menu().load();
+                gameplay().unload();
+                pause_menu().unload();
             } else if (next_screen == GameScreenType::Gameplay) {
-                gameplay_screen.load();
-                main_menu_screen.unload();
-                pause_screen.unload();
+                gameplay().load();
+                main_menu().unload();
+                pause_menu().unload();
             } else if (next_screen == GameScreenType::Pause) {
-                pause_screen.load();
-                main_menu_screen.unload();
+                pause_menu().load();
+                main_menu().unload();
                 // don't unload gameplay
             } else {
                 throw std::exception("Tried to change to invalid screen.");
             }
 
             current_screen = next_screen;
+            current_screen_ptr().activate();
 
             std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
         }

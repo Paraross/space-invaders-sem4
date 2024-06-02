@@ -15,18 +15,13 @@ namespace pause_screen {
 
     class PauseScreen : public Screen {
         entt::registry registry;
-        bool is_loaded;
 
     public:
         PauseScreen() {
-            is_loaded = false;
+
         }
 
         void load() {
-            if (is_loaded) {
-                return;
-            }
-
             auto inner_box = registry.create();
 
             auto box = Rectangle();
@@ -47,14 +42,10 @@ namespace pause_screen {
 
             registry.emplace<RectangleComp>(outer_box, box2.x, box2.y, box2.width, box2.height);
             registry.emplace<ColorComp>(outer_box, BLACK);
-        
-            is_loaded = true;
         }
 
         void unload() {
             registry.clear();
-        
-            is_loaded = false;
         }
 
         auto update() -> GameScreenType {
