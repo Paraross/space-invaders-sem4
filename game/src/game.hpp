@@ -2,6 +2,7 @@
 
 #include <string>
 #include <sstream>
+#include <array>
 
 #include "raylib.h"
 #include "entt.hpp"
@@ -30,9 +31,16 @@ namespace game {
         PauseScreen pause_screen;
         GameScreenType current_screen;
 
+        std::array<Screen *, 3> screen_ptrs;
+
     public:
         Game() {
             current_screen = GameScreenType::MainMenu;
+
+            screen_ptrs[(size_t)GameScreenType::MainMenu] = &main_menu_screen;
+            screen_ptrs[(size_t)GameScreenType::Gameplay] = &gameplay_screen;
+            screen_ptrs[(size_t)GameScreenType::Pause] = &pause_screen;
+
             current_screen_ptr()->load();
         }
 
@@ -72,15 +80,8 @@ namespace game {
 
     private:
         auto current_screen_ptr() -> Screen * {
-            if (current_screen == GameScreenType::MainMenu) {
-                return &main_menu_screen;
-            } else if (current_screen == GameScreenType::Gameplay) {
-                return &gameplay_screen;
-            } else if (current_screen == GameScreenType::Pause) {
-                return &pause_screen;
-            } else {
-                throw std::exception("Tried to access an invalid screen.");
-            }
+            // either this or ifs
+            return screen_ptrs[(size_t)current_screen];
         }
 
         void transition_to_other_screen(GameScreenType next_screen) {
