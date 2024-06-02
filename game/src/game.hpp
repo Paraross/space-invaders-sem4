@@ -59,11 +59,19 @@ namespace game {
             pause_menu() = ScreenData(&pause_screen);
 
             current_screen_ptr().load();
-            current_screen_ptr().activate();
         }
 
         void update() {
-            auto next_screen = current_screen_ptr().update();
+            // auto next_screen = current_screen_ptr().update();
+
+            // TODO: update shouldn't be the thing to decide the next screen
+            auto next_screen = current_screen;
+            for (auto &screen : screen_ptrs) {
+                auto maybe_next_screen = screen.update();
+                if (maybe_next_screen != screen.id()) {
+                    next_screen = maybe_next_screen;
+                }
+            }
 
             transition_screen(next_screen);
         }
@@ -79,11 +87,6 @@ namespace game {
 
             // DrawFPS(10, 10);
 
-            // if (current_screen == GameScreenType::Pause) {
-            //     gameplay_screen.draw();
-            // }
-            // current_screen_ptr().draw();
-
             for (auto screen : screen_ptrs) {
                 screen.draw();
             }
@@ -98,17 +101,14 @@ namespace game {
             }
 
             if (next_screen == GameScreenType::MainMenu) {
-                main_menu().load();
                 gameplay().unload();
                 pause_menu().unload();
             } else if (next_screen == GameScreenType::Gameplay) {
-                gameplay().load();
                 main_menu().unload();
                 pause_menu().unload();
             } else if (next_screen == GameScreenType::Pause) {
-                pause_menu().load();
                 main_menu().unload();
-                // don't unload gameplay
+                gameplay().deactivate();
             } else {
                 throw std::exception("Tried to change to invalid screen.");
             }
@@ -116,7 +116,7 @@ namespace game {
             std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
 
             current_screen = next_screen;
-            current_screen_ptr().activate();
+            current_screen_ptr().load();
         }
     };
 }

@@ -41,11 +41,18 @@ namespace game_screen {
             state = ScreenState::Active;
         }
 
+        void deactivate() {
+            if (state == ScreenState::Unloaded) {
+                return;
+            }
+            state = ScreenState::Inactive;
+        }
+
         void load() {
             if (state == ScreenState::Unloaded) {
                 screen->load();
-                state = ScreenState::Inactive;
             }
+            state = ScreenState::Active;
         }
 
         void unload() {
@@ -68,6 +75,10 @@ namespace game_screen {
                 return;
             }
             screen->draw();
+        }
+
+        auto id() -> GameScreenType {
+            return screen->id();
         }
     };
 }
