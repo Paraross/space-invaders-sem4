@@ -21,63 +21,11 @@ namespace game {
     using input::InputAction;
     using game_screen::GameScreenType;
     using game_screen::Screen;
+    using game_screen::ScreenState;
+    using game_screen::ScreenData;
     using main_menu_screen::MainMenuScreen;
     using gameplay_screen::GameplayScreen;
     using pause_screen::PauseScreen;
-
-    enum class ScreenState {
-        Active,
-        Inactive,
-        Unloaded,
-    };
-    
-    struct ScreenData {
-        Screen *screen;
-        ScreenState state;
-
-        ScreenData() = default;
-        
-        ScreenData(Screen *screen) {
-            this->screen = screen;
-            this->state = ScreenState::Unloaded;
-        }
-
-        void activate() {
-            if (state == ScreenState::Unloaded) {
-                return;
-            }
-            state = ScreenState::Active;
-        }
-
-        void load() {
-            if (state == ScreenState::Unloaded) {
-                screen->load();
-                state = ScreenState::Inactive;
-            }
-        }
-
-        void unload() {
-            if (state == ScreenState::Unloaded) {
-                return;
-            }
-            screen->unload();
-            state = ScreenState::Unloaded;
-        }
-
-        auto update() -> GameScreenType {
-            if (state == ScreenState::Active) {
-                return screen->update();
-            }
-            return screen->id();
-        }
-
-        void draw() {
-            if (state == ScreenState::Unloaded) {
-                return;
-            }
-            screen->draw();
-        }
-    };
 
     class Game {
         MainMenuScreen main_menu_screen;
@@ -165,10 +113,10 @@ namespace game {
                 throw std::exception("Tried to change to invalid screen.");
             }
 
+            std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
+
             current_screen = next_screen;
             current_screen_ptr().activate();
-
-            std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
         }
     };
 }
