@@ -28,25 +28,27 @@ namespace game {
         MainMenuScreen main_menu_screen;
         GameplayScreen gameplay_screen;
         PauseScreen pause_screen;
-        Screen *current_screen;
+        GameScreenType current_screen;
 
     public:
         Game() {
-            current_screen = &main_menu_screen;
-            current_screen->load();
+            current_screen = GameScreenType::MainMenu;
+            current_screen_ptr()->load();
         }
 
         void update() {
-            auto current_screen_id = current_screen->id();
-            auto next_screen_id = current_screen->update();
+            auto next_screen = current_screen_ptr()->update();
 
-            if (next_screen_id == current_screen_id) {
+            if (next_screen == current_screen) {
                 return;
             }
 
-            std::cout << "--- screen changed from " << (int)current_screen->id() << " to " << (int)next_screen_id << " ---\n";
+            std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
 
-            transition_to_other_screen(next_screen_id);
+            // auto transition = Transition(current_screen, next_screen);
+            // transition_to_other_screen(transition);
+
+            transition_to_other_screen(next_screen);
         }
 
         void draw() {
@@ -60,37 +62,45 @@ namespace game {
 
             // DrawFPS(10, 10);
 
-            if (current_screen->id() == GameScreenType::Pause) {
+            if (current_screen == GameScreenType::Pause) {
                 gameplay_screen.draw();
             }
-            current_screen->draw();
+            current_screen_ptr()->draw();
 
             EndDrawing();
         }
 
     private:
-        void transition_to_other_screen(GameScreenType next_screen_id) {
-            if (next_screen_id == GameScreenType::MainMenu) {
+        auto current_screen_ptr() -> Screen * {
+            if (current_screen == GameScreenType::MainMenu) {
+                return &main_menu_screen;
+            } else if (current_screen == GameScreenType::Gameplay) {
+                return &gameplay_screen;
+            } else if (current_screen == GameScreenType::Pause) {
+                return &pause_screen;
+            } else {
+                throw std::exception("Tried to access an invalid screen.");
+            }
+        }
+
+        void transition_to_other_screen(GameScreenType next_screen) {
+            if (next_screen == GameScreenType::MainMenu) {
                 main_menu_screen.load();
                 gameplay_screen.unload();
                 pause_screen.unload();
-
-                current_screen = &main_menu_screen;
-            } else if (next_screen_id == GameScreenType::Gameplay) {
+            } else if (next_screen == GameScreenType::Gameplay) {
                 gameplay_screen.load();
                 main_menu_screen.unload();
                 pause_screen.unload();
-
-                current_screen = &gameplay_screen;
-            } else if (next_screen_id == GameScreenType::Pause) {
+            } else if (next_screen == GameScreenType::Pause) {
                 pause_screen.load();
                 main_menu_screen.unload();
                 // don't unload gameplay
-
-                current_screen = &pause_screen;
             } else {
                 throw std::exception("Tried to change to invalid screen.");
             }
+
+            current_screen = next_screen;
         }
     };
 }
