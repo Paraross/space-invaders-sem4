@@ -118,23 +118,23 @@ namespace gameplay_screen {
     private:
         auto player_died() -> bool {
             auto player_view = registry.view<VelocityComp, const MaxSpeedComp, const PlayerComp>();
-            // std::cout << "got here 1\n";
             auto player = player_view.front();
-            // std::cout << "got here 2\n";
 
             return !registry.valid(player);
+        }
+
+        auto get_score_value() -> int {
+            auto score_view = registry.view<const ScoreComp, const TheScoreComp>();
+            auto score_entity = score_view.front();
+            auto &score = score_view.get<ScoreComp>(score_entity).score;
+
+            return score;
         }
 
         // for a lack of a better name
         auto check_transition() -> Transition {
             if (player_died()) {
-                // TODO: move getting score into method
-                auto score_view = registry.view<TextComp, const ScoreComp, const TheScoreComp>();
-                auto score_entity = score_view.front();
-
-                auto &score = score_view.get<ScoreComp>(score_entity).score;
-
-                return Transition::to_with_score(id(), GameScreenType::GameOver, score);
+                return Transition::to_with_score(id(), GameScreenType::GameOver, get_score_value());
             }
             if (IsKeyPressed(KEY_ESCAPE)) {
                 return Transition::to(id(), GameScreenType::Pause);
