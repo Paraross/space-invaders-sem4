@@ -14,8 +14,7 @@ int main() {
     SetExitKey(KEY_NULL);
 
     while (!WindowShouldClose()) {
-        game.update();
-        game.draw();
+        game.run();
     }
 
     CloseWindow();

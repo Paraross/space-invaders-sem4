@@ -62,6 +62,12 @@ namespace game {
             current_screen().load();
         }
 
+        void run() {
+            update();
+            draw();
+        }
+
+    private:
         void update() {
             auto transition = current_screen().update();
 
@@ -85,8 +91,6 @@ namespace game {
 
             EndDrawing();
         }
-
-    private:
         void transition_screen(Transition transition) {
             if (!transition.is_transition()) {
                 return;
