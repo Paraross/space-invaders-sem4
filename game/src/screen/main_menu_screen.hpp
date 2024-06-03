@@ -9,6 +9,7 @@
 namespace main_menu_screen {
     using game_screen::GameScreenType;
     using game_screen::Screen;
+    using game_screen::Transition;
 
     class MainMenuScreen : public Screen {
     public:
@@ -24,12 +25,10 @@ namespace main_menu_screen {
             
         }
 
-        auto update() -> GameScreenType {
-            auto next_screen = GameScreenType::MainMenu;
+        auto update() -> Transition {
+            auto transition = process_inputs();
 
-            next_screen = process_inputs();
-
-            return next_screen;
+            return transition;
         }
 
         void draw() {
@@ -41,11 +40,11 @@ namespace main_menu_screen {
         }
 
     private:
-        auto process_inputs() -> GameScreenType {
+        auto process_inputs() -> Transition {
             if (IsKeyPressed(KEY_ENTER)) {
-                return GameScreenType::Gameplay;
+                return Transition::to(id(), GameScreenType::Gameplay);
             }
-            return GameScreenType::MainMenu;
+            return Transition::no_transition();
         }
     };
 }

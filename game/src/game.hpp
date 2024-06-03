@@ -23,6 +23,7 @@ namespace game {
     using game_screen::Screen;
     using game_screen::ScreenState;
     using game_screen::ScreenData;
+    using game_screen::Transition;
     using main_menu_screen::MainMenuScreen;
     using gameplay_screen::GameplayScreen;
     using pause_screen::PauseScreen;
@@ -62,15 +63,14 @@ namespace game {
         }
 
         void update() {
-            auto next_screen = current_screen;
+            // TODO: change this whole shit, loop unnecessary
             for (auto &screen : screen_ptrs) {
-                auto maybe_next_screen = screen.update();
-                if (maybe_next_screen != screen.id()) {
-                    next_screen = maybe_next_screen;
+                auto transition = screen.update();
+                if (transition.is_transition()) {
+                    transition_screen(transition);
+                    break;
                 }
             }
-
-            transition_screen(next_screen);
         }
 
         void draw() {
@@ -92,10 +92,12 @@ namespace game {
         }
 
     private:
-        void transition_screen(GameScreenType next_screen) {
-            if (next_screen == current_screen) {
+        void transition_screen(Transition transition) {
+            if (!transition.is_transition()) {
                 return;
             }
+
+            auto next_screen = transition.next_screen();
 
             if (next_screen == GameScreenType::MainMenu) {
                 gameplay().unload();

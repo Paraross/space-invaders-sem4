@@ -71,7 +71,7 @@ namespace game_screen {
         }
 
         auto is_transition() -> bool {
-            return prev == next;
+            return prev != next;
         }
 
         auto next_screen() -> GameScreenType {

@@ -12,6 +12,7 @@
 namespace pause_screen {
     using game_screen::GameScreenType;
     using game_screen::Screen;
+    using game_screen::Transition;
 
     class PauseScreen : public Screen {
         entt::registry registry;
@@ -47,12 +48,10 @@ namespace pause_screen {
             registry.clear();
         }
 
-        auto update() -> GameScreenType {
-            auto next_screen = GameScreenType::Pause;
+        auto update() -> Transition {
+            auto transition = process_inputs();
 
-            next_screen = process_inputs();
-
-            return next_screen;
+            return transition;
         }
 
         void draw() {
@@ -69,15 +68,15 @@ namespace pause_screen {
         }
 
     private:
-        auto process_inputs() -> GameScreenType {
+        auto process_inputs() -> Transition {
             if (IsKeyPressed(KEY_ESCAPE)) {
-                return GameScreenType::Gameplay;
+                return Transition::to(id(), GameScreenType::Gameplay);
             }
             if (IsKeyPressed(KEY_ENTER)) {
                 registry.clear();
-                return GameScreenType::MainMenu;
+                return Transition::to(id(), GameScreenType::MainMenu);
             }
-            return GameScreenType::Pause;
+            return Transition::no_transition();
         }
     };
 }

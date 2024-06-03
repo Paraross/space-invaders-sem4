@@ -11,6 +11,7 @@ namespace gameplay_screen {
     using input::InputAction;
     using game_screen::GameScreenType;
     using game_screen::Screen;
+    using game_screen::Transition;
 
     class GameplayScreen : public Screen {
         entt::registry registry;
@@ -85,9 +86,7 @@ namespace gameplay_screen {
             registry.clear();
         }
 
-        auto update() -> GameScreenType {
-            auto next_screen = GameScreenType::Gameplay;
-
+        auto update() -> Transition {
             update_score_text();
             update_player_movement();
             update_player_shooting();
@@ -99,11 +98,11 @@ namespace gameplay_screen {
             check_bullet_player_collisions();
             kill_with_no_health();
             receive_enemy_hit_events();
-            next_screen = process_inputs();
+            auto transition = process_inputs();
 
             destroy_processed_events();
 
-            return next_screen;
+            return transition;
         }
 
         void draw() {
@@ -116,11 +115,11 @@ namespace gameplay_screen {
         }
 
     private:
-        auto process_inputs() -> GameScreenType {
+        auto process_inputs() -> Transition {
             if (IsKeyPressed(KEY_ESCAPE)) {
-                return GameScreenType::Pause;
+                return Transition::to(id(), GameScreenType::Pause);
             }
-            return GameScreenType::Gameplay;
+            return Transition::no_transition();
         }
 
         void receive_enemy_hit_events() {
