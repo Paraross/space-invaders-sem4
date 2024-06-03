@@ -63,11 +63,9 @@ namespace game {
         }
 
         void update() {
-            // TODO: change this whole shit, loop unnecessary
-            for (auto &screen : screen_ptrs) {
-                auto transition = screen.update();
-                if (transition.is_transition()) {
-                    transition_screen(transition);
+            auto transition = current_screen().update();
+
+            transition_screen(transition);
                     break;
                 }
             }
