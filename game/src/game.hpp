@@ -32,12 +32,12 @@ namespace game {
         MainMenuScreen main_menu_screen;
         GameplayScreen gameplay_screen;
         PauseScreen pause_screen;
-        GameScreenType current_screen;
+        GameScreenType current_screen_type;
 
         std::array<ScreenData, 3> screen_ptrs;
 
-        auto current_screen_ptr() -> ScreenData & {
-            return screen_ptrs[(size_t)current_screen];
+        auto current_screen() -> ScreenData & {
+            return screen_ptrs[(size_t)current_screen_type];
         }
 
         auto main_menu() -> ScreenData & {
@@ -53,22 +53,19 @@ namespace game {
         }
     public:
         Game() {
-            current_screen = GameScreenType::MainMenu;
+            current_screen_type = GameScreenType::MainMenu;
 
             main_menu() = ScreenData(&main_menu_screen);
             gameplay() = ScreenData(&gameplay_screen);
             pause_menu() = ScreenData(&pause_screen);
 
-            current_screen_ptr().load();
+            current_screen().load();
         }
 
         void update() {
             auto transition = current_screen().update();
 
             transition_screen(transition);
-                    break;
-                }
-            }
         }
 
         void draw() {
@@ -110,10 +107,10 @@ namespace game {
                 throw std::exception("Tried to change to invalid screen.");
             }
 
-            std::cout << "--- screen changed from " << (int)current_screen << " to " << (int)next_screen << " ---\n";
+            std::cout << "--- screen changed from " << (int)current_screen_type << " to " << (int)next_screen << " ---\n";
 
-            current_screen = next_screen;
-            current_screen_ptr().load();
+            current_screen_type = next_screen;
+            current_screen().load();
         }
     };
 }
