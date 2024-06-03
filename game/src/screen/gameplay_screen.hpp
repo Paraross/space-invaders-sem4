@@ -36,6 +36,7 @@ namespace gameplay_screen {
             registry.emplace<MaxSpeedComp>(player, 1000.0f);
             registry.emplace<FireCooldownComp>(player, 0.2f);
             registry.emplace<ColorComp>(player, BLACK);
+            registry.emplace<HealthComp>(player, 1.0f);
 
             //+ enemies
             auto enemy_count = 10;
@@ -98,7 +99,7 @@ namespace gameplay_screen {
             check_bullet_player_collisions();
             kill_with_no_health();
             receive_enemy_hit_events();
-            auto transition = process_inputs();
+            auto transition = check_transition();
 
             destroy_processed_events();
 
@@ -115,7 +116,26 @@ namespace gameplay_screen {
         }
 
     private:
-        auto process_inputs() -> Transition {
+        auto player_died() -> bool {
+            auto player_view = registry.view<VelocityComp, const MaxSpeedComp, const PlayerComp>();
+            // std::cout << "got here 1\n";
+            auto player = player_view.front();
+            // std::cout << "got here 2\n";
+
+            return !registry.valid(player);
+        }
+
+        // for a lack of a better name
+        auto check_transition() -> Transition {
+            if (player_died()) {
+                // TODO: move getting score into method
+                auto score_view = registry.view<TextComp, const ScoreComp, const TheScoreComp>();
+                auto score_entity = score_view.front();
+
+                auto &score = score_view.get<ScoreComp>(score_entity).score;
+
+                return Transition::to_with_score(id(), GameScreenType::GameOver, score);
+            }
             if (IsKeyPressed(KEY_ESCAPE)) {
                 return Transition::to(id(), GameScreenType::Pause);
             }
@@ -361,6 +381,5 @@ namespace gameplay_screen {
                 registry.destroy(event_entity);
             }
         }
-
     };
 }

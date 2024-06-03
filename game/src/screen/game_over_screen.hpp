@@ -9,16 +9,17 @@
 #include "draw.hpp"
 #include "utils.hpp"
 
-namespace pause_screen {
+namespace game_over_screen {
     using game_screen::GameScreenType;
     using game_screen::Screen;
     using game_screen::Transition;
 
-    class PauseScreen : public Screen {
+    class GameOverScreen : public Screen {
         entt::registry registry;
+        int score;
 
     public:
-        PauseScreen() {
+        GameOverScreen() {
 
         }
 
@@ -57,25 +58,29 @@ namespace pause_screen {
         void draw() {
             draw_color_rectangles(registry);
 
-            auto pause_text = "Pause Menu";
+            auto pause_text = "Game Over";
+            auto score_text = std::to_string(score).c_str();
             auto font_size = 40;
 
-            DrawTextCentered(pause_text, (int)half_screen_width(), (int)half_screen_height(), font_size, BLACK);
+            auto tl = DrawTextCentered(pause_text, (int)half_screen_width(), (int)half_screen_height(), font_size, BLACK);
+            DrawText(score_text, tl.x, tl.y + font_size * 1.5f, font_size, BLACK);
         }
 
         auto id() -> GameScreenType {
-            return GameScreenType::Pause;
+            return GameScreenType::GameOver;
+        }
+
+        void set_score(int score) {
+            this->score = score;
         }
 
     private:
         auto process_inputs() -> Transition {
-            if (IsKeyPressed(KEY_ESCAPE)) {
-                return Transition::to(id(), GameScreenType::Gameplay);
-            }
             if (IsKeyPressed(KEY_ENTER)) {
                 return Transition::to(id(), GameScreenType::MainMenu);
             }
             return Transition::no_transition();
         }
     };
+
 }

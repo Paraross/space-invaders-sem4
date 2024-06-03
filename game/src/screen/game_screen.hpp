@@ -10,6 +10,7 @@ namespace game_screen {
         // Settings,
         Gameplay,
         Pause,
+        GameOver,
     };
 
     struct Screen {
@@ -76,6 +77,10 @@ namespace game_screen {
 
         auto next_screen() -> GameScreenType {
             return next;
+        }
+
+        auto get_score() -> int {
+            return data.score;
         }
     };
     
