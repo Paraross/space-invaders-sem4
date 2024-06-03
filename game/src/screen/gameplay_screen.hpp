@@ -313,7 +313,7 @@ namespace gameplay_screen {
 
                         enemy_health.health -= bullet_damage.damage;
 
-                        send_enemy_hit_event(registry, hit_pos);
+                        EnemyHitEvent(hit_pos).send(registry);
 
                         registry.destroy(bullet);
                         

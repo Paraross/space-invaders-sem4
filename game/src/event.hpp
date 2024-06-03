@@ -8,11 +8,19 @@
 /// Marks an event that has been processed and is to be deleted.
 struct ProcessedEventComp {};
 
-struct EnemyHitEvent {
-    glm::vec2 position;
+struct Event {
+    virtual void send(entt::registry &registry) = 0;
 };
 
-void send_enemy_hit_event(entt::registry &registry, glm::vec2 position) {
-    auto event = registry.create();
-    registry.emplace<EnemyHitEvent>(event, position);
-}
+struct EnemyHitEvent : public Event {
+    glm::vec2 position;
+
+    EnemyHitEvent(glm::vec2 position) {
+        this->position = position;
+    }
+
+    void send(entt::registry &registry) {
+        auto event = registry.create();
+        registry.emplace<EnemyHitEvent>(event, position);
+    }
+};
