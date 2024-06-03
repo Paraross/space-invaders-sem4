@@ -62,9 +62,6 @@ namespace game {
         }
 
         void update() {
-            // auto next_screen = current_screen_ptr().update();
-
-            // TODO: update shouldn't be the thing to decide the next screen
             auto next_screen = current_screen;
             for (auto &screen : screen_ptrs) {
                 auto maybe_next_screen = screen.update();

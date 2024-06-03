@@ -30,11 +30,10 @@ namespace pause_screen {
             center_rect_pos(box, glm::vec2(half_screen_width(), half_screen_height()));
 
             registry.emplace<RectangleComp>(inner_box, box.x, box.y, box.width, box.height);
-            registry.emplace<ColorComp>(inner_box, WHITE); // TODO: BLANK
+            registry.emplace<ColorComp>(inner_box, WHITE);
 
             auto outer_box = registry.create();
 
-            // TODO: make this shit into 4 rectangles at the edges so the interior can be transparent
             auto box2 = Rectangle();
             box2.height = half_screen_height() + 20.0f;
             box2.width = half_screen_width() + 20.0f;
