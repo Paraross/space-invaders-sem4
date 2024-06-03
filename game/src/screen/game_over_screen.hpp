@@ -58,12 +58,12 @@ namespace game_over_screen {
         void draw() {
             draw_color_rectangles(registry);
 
-            auto pause_text = "Game Over";
-            auto score_text = std::to_string(score).c_str();
+            auto game_over_text = "Game Over";
+            auto score_text = "Score: " + std::to_string(score);
             auto font_size = 40;
 
-            auto tl = DrawTextCentered(pause_text, (int)half_screen_width(), (int)half_screen_height(), font_size, BLACK);
-            DrawText(score_text, tl.x, tl.y + font_size * 1.5f, font_size, BLACK);
+            DrawTextCentered(game_over_text, (int)half_screen_width(), (int)half_screen_height(), font_size, BLACK);
+            DrawTextCentered(score_text.c_str(), (int)half_screen_width(), (int)half_screen_height() + font_size, font_size, BLACK);
         }
 
         auto id() -> GameScreenType {

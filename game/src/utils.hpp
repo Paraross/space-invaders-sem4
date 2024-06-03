@@ -18,12 +18,10 @@ auto centered_text_pos(const char *text, int pos_x, int pos_y, int font_size) ->
 }
 
 // nice random PascalCase
-auto DrawTextCentered(const char *text, int pos_x, int pos_y, int font_size, Color color) -> glm::ivec2 {
+void DrawTextCentered(const char *text, int pos_x, int pos_y, int font_size, Color color) {
     auto centered_pos = centered_text_pos(text, pos_x, pos_y, font_size);
 
     DrawText(text, centered_pos.x, centered_pos.y, font_size, color);
-
-    return centered_pos;
 }
 
 auto half_screen_width() -> float {
