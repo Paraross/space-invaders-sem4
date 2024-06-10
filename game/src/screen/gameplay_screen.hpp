@@ -5,6 +5,7 @@
 #include "other.hpp"
 #include "input.hpp"
 #include "screen/game_screen.hpp"
+#include "stage/stage.hpp"
 
 namespace gameplay_screen {
     using input::Keybinds;
@@ -12,10 +13,12 @@ namespace gameplay_screen {
     using game_screen::GameScreenType;
     using game_screen::Screen;
     using game_screen::Transition;
+    using stage::StageManager;
 
     class GameplayScreen : public Screen {
         entt::registry registry;
         Keybinds keybinds;
+        StageManager stage_manager;
 
     public:
         GameplayScreen() {
@@ -38,49 +41,8 @@ namespace gameplay_screen {
             registry.emplace<ColorComp>(player, BLACK);
             registry.emplace<HealthComp>(player, 1.0f);
 
-            //+ enemies
-            auto enemy_count = 10;
-
-            // row 1
-            for (size_t i = 0; i < enemy_count; i++) {
-                const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
-
-                auto enemy = registry.create();
-                registry.emplace<EnemyComp>(enemy);
-                registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f, 75.0f, 50.0f);
-                registry.emplace<ColorComp>(enemy, RED);
-                registry.emplace<HealthComp>(enemy, 3.0f);
-                registry.emplace<ScoreComp>(enemy, 2);
-            }
-
-            enemy_count -= 1;
-
-            // row 2
-            for (auto i = 0; i < enemy_count; i++) {
-                const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
-
-                auto enemy = registry.create();
-                registry.emplace<EnemyComp>(enemy);
-                registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
-                registry.emplace<ColorComp>(enemy, RED);
-                registry.emplace<HealthComp>(enemy, 1.0f);
-                registry.emplace<ScoreComp>(enemy, 1);
-            }
-
-            enemy_count += 1;
-
-            // row 3
-            for (auto i = 0; i < enemy_count; i++) {
-                const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
-
-                auto enemy = registry.create();
-                registry.emplace<EnemyComp>(enemy);
-                registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
-                registry.emplace<ColorComp>(enemy, RED);
-                registry.emplace<HealthComp>(enemy, 2.0f);
-                registry.emplace<FireCooldownComp>(enemy, 2.0f);
-                // registry.emplace<ScoreComp>(enemy, 1);
-            }
+            stage_manager.reset_current_stage();
+            stage_manager.init_next_stage(registry);
         }
 
         void unload() {
@@ -99,6 +61,7 @@ namespace gameplay_screen {
             check_bullet_player_collisions();
             kill_with_no_health();
             receive_enemy_hit_events();
+            manage_stage();
             auto transition = check_transition();
 
             destroy_processed_events();
@@ -166,6 +129,14 @@ namespace gameplay_screen {
                 registry.emplace<EnemyHitEventTextComp>(text_entity);
 
                 registry.emplace<ProcessedEventComp>(event_entity);
+            }
+        }
+
+        void manage_stage() {
+            auto enemies = registry.view<RectangleComp, HealthComp, const EnemyComp>();
+
+            if (enemies.size_hint() == 0) {
+                stage_manager.init_next_stage(registry);
             }
         }
 
