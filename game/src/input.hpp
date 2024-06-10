@@ -224,15 +224,11 @@ namespace input {
                 | views::transform([](auto &&str) { return std::string_view(str); });
 
             for (auto [i, line] : lines | views::enumerate) {
-                // skip last line
+                // end on last line
                 if (line.empty()) {
                     break;
                 }
 
-                auto tokens = line
-                    | views::split(' ')
-                    | views::transform([](auto &&str) { return std::string_view(str); });
-                
                 auto line_matches_pattern = std::regex_match(line.begin(), line.end(), valid_line_pattern);
                 
                 // ill-formed line
@@ -245,6 +241,10 @@ namespace input {
 
                     continue;
                 }
+
+                auto tokens = line
+                    | views::split(' ')
+                    | views::transform([](auto &&str) { return std::string_view(str); });
 
                 auto tokens_iter = tokens.begin();
 
