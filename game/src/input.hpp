@@ -8,6 +8,7 @@
 #include <iterator>
 #include <ranges>
 #include <exception>
+#include <regex>
 
 #include "raylib.h"
 
@@ -216,6 +217,8 @@ namespace input {
             auto file = std::ifstream(file_path);
             auto file_content = std::string(std::istreambuf_iterator<char>(file), {});
 
+            const auto valid_line_pattern = std::regex(R"([KM] \d{1,3} [KM] \d{1,3})");
+
             auto lines = file_content
                 | views::split('\n')
                 | views::transform([](auto &&str) { return std::string_view(str); });
@@ -229,11 +232,11 @@ namespace input {
                 auto tokens = line
                     | views::split(' ')
                     | views::transform([](auto &&str) { return std::string_view(str); });
-
-                auto token_count = ranges::distance(tokens);
+                
+                auto line_matches_pattern = std::regex_match(line.begin(), line.end(), valid_line_pattern);
                 
                 // ill-formed line
-                if (token_count != 4) {
+                if (!line_matches_pattern) {
                     std::cout << "--- line " << i + 1 << ". is ill-formed ---\n";
                     std::cout << "--- \"" << line << "\" ---\n";
 
