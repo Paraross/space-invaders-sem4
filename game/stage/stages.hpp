@@ -21,10 +21,7 @@ namespace stage {
     }
 
     auto spawn_shooting_enemy_at_pos(entt::registry &registry, glm::vec2 pos) -> entt::entity {
-        static auto texture = LoadTexture("resources/enemy.png");
-
         auto enemy = spawn_enemy_at_pos(registry, pos);
-
         registry.emplace<FireCooldownComp>(enemy, 2.0f);
 
         return enemy;
