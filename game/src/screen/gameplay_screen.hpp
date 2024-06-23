@@ -1,6 +1,6 @@
 #pragma once
 
-#include <thread>
+#include <future>
 
 #include "entt.hpp"
 
@@ -52,26 +52,26 @@ namespace gameplay_screen {
         }
 
         auto update() -> Transition {
-            auto thread1 = std::thread([this]() {
-                check_bullet_enemy_collisions(); // mut HealthComp, destroy player bullet
-                check_bullet_player_collisions(); // mut HealthComp, destroy enemy bullet
+            auto future = std::async(std::launch::async, [this]() {
+                check_bullet_enemy_collisions();
+                check_bullet_player_collisions();
             });
 
-            update_player_movement(); // mut VelocityComp
+            update_player_movement();
 
-            update_player_shooting(); // mut FireCooldownComp
-            update_enemy_shooting(); // mut FireCooldownComp
-            update_fire_cd(); // mut FireCooldownComp
+            update_player_shooting();
+            update_enemy_shooting();
+            update_fire_cd();
 
-            update_rectangle_position(); // mut RectangleComp
-            update_on_screen_left_despawning(); // mut RectangleComp
-            update_score_text(); // mut TextComp, whatever
+            update_rectangle_position();
+            update_on_screen_left_despawning();
+            update_score_text();
 
-            thread1.join();
+            future.get();
 
             receive_enemy_hit_events();
 
-            kill_with_no_health(); // mut ScoreComp, destroy entity
+            kill_with_no_health();
             destroy_processed_events();
             destroy_entities();
             manage_stage();
@@ -362,8 +362,7 @@ namespace gameplay_screen {
             auto &score = score_view.get<ScoreComp>(score_entity).score;
             auto &text = score_view.get<TextComp>(score_entity).text;
 
-            // text = "Score: " + std::to_string(score);
-            text = std::string("");
+            text = "Score: " + std::to_string(score);
         }
 
         void destroy_processed_events() {
