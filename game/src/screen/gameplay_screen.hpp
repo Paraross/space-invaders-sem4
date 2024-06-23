@@ -40,8 +40,7 @@ namespace gameplay_screen {
             registry.emplace<VelocityComp>(player, glm::vec2(0.0f, 0.0f));
             registry.emplace<MaxSpeedComp>(player, 1000.0f);
             registry.emplace<FireCooldownComp>(player, 0.2f);
-            auto texture = Texture2D();
-            texture = LoadTexture("resources/player_ship.png");
+            auto texture = LoadTexture("resources/player_ship.png");
             registry.emplace<TextureComp>(player, texture);
             registry.emplace<HealthComp>(player, 1.0f);
 

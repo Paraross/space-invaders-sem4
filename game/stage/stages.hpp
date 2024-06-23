@@ -7,9 +7,8 @@
 #include "components.hpp"
 
 namespace stage {
-    void spawn_enemy_at_pos(entt::registry &registry, glm::vec2 pos) {
-        auto texture = Texture2D();
-        texture = LoadTexture("resources/enemy.png");
+    auto spawn_enemy_at_pos(entt::registry &registry, glm::vec2 pos) -> entt::entity {
+        static auto texture = LoadTexture("resources/enemy.png");
 
         auto enemy = registry.create();
         registry.emplace<EnemyComp>(enemy);
@@ -17,19 +16,18 @@ namespace stage {
         registry.emplace<TextureComp>(enemy, texture);
         registry.emplace<HealthComp>(enemy, 3.0f);
         registry.emplace<ScoreComp>(enemy, 1);
+
+        return enemy;
     }
 
-    void spawn_shooting_enemy_at_pos(entt::registry &registry, glm::vec2 pos) {
-        auto texture = Texture2D();
-        texture = LoadTexture("resources/enemy.png");
+    auto spawn_shooting_enemy_at_pos(entt::registry &registry, glm::vec2 pos) -> entt::entity {
+        static auto texture = LoadTexture("resources/enemy.png");
 
-        auto enemy = registry.create();
-        registry.emplace<EnemyComp>(enemy);
-        registry.emplace<RectangleComp>(enemy, pos.x, pos.y, 75.0f, 50.0f);
-        registry.emplace<TextureComp>(enemy, texture);
-        registry.emplace<HealthComp>(enemy, 3.0f);
+        auto enemy = spawn_enemy_at_pos(registry, pos);
+
         registry.emplace<FireCooldownComp>(enemy, 2.0f);
-        registry.emplace<ScoreComp>(enemy, 1);
+
+        return enemy;
     }
 
     void stage0_init(entt::registry &registry) {
