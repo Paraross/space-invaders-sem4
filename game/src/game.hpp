@@ -88,11 +88,7 @@ namespace game {
 
             ClearBackground(LIGHTGRAY);
 
-            // auto text = std::to_string(GetMonitorRefreshRate(GetCurrentMonitor()));
-            // auto text = std::to_string(player.fire_cooldown);
-            // DrawText(text.c_str(), 10, 10, 40, BLACK);
-
-            // DrawFPS(10, 10);
+            DrawFPS(10, 50);
 
             for (auto screen : screen_ptrs) {
                 screen.draw();

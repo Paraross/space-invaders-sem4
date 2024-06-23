@@ -60,7 +60,7 @@ namespace stage {
     }
 
     void stage2_init(entt::registry &registry) {
-        auto enemy_count = 10;
+        auto enemy_count = 8;
 
         // row 1
         for (size_t i = 0; i < enemy_count; i++) {

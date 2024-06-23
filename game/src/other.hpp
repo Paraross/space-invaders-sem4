@@ -11,6 +11,8 @@ struct EnemyComp {};
 
 struct BulletComp {};
 
+struct DestroyEntityComp {};
+
 struct RectangleComp {
     Rectangle rect;
 
