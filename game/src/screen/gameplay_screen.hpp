@@ -1,5 +1,7 @@
 #pragma once
 
+#include <thread>
+
 #include "entt.hpp"
 
 #include "other.hpp"
@@ -50,21 +52,31 @@ namespace gameplay_screen {
         }
 
         auto update() -> Transition {
-            update_score_text();
-            update_player_movement();
-            update_player_shooting();
-            update_enemy_shooting();
-            update_fire_cd();
-            update_rectangle_position();
-            update_on_screen_left_despawning();
-            check_bullet_enemy_collisions();
-            check_bullet_player_collisions();
-            kill_with_no_health();
-            receive_enemy_hit_events();
-            manage_stage();
-            auto transition = check_transition();
+            auto thread1 = std::thread([this]() {
+                check_bullet_enemy_collisions(); // mut HealthComp, destroy player bullet
+                check_bullet_player_collisions(); // mut HealthComp, destroy enemy bullet
+            });
 
+            update_player_movement(); // mut VelocityComp
+
+            update_player_shooting(); // mut FireCooldownComp
+            update_enemy_shooting(); // mut FireCooldownComp
+            update_fire_cd(); // mut FireCooldownComp
+
+            update_rectangle_position(); // mut RectangleComp
+            update_on_screen_left_despawning(); // mut RectangleComp
+            update_score_text(); // mut TextComp, whatever
+
+            thread1.join();
+
+            receive_enemy_hit_events();
+
+            kill_with_no_health(); // mut ScoreComp, destroy entity
             destroy_processed_events();
+            destroy_entities();
+            manage_stage();
+
+            auto transition = check_transition();
 
             return transition;
         }
@@ -110,7 +122,7 @@ namespace gameplay_screen {
             const auto font_size = 20;
             auto text_pos = glm::vec2(10.0f, 100.0f);
 
-            auto texts = registry.group<TextComp, const EnemyHitEventTextComp>();
+            auto texts = registry.group<const TextComp, const EnemyHitEventTextComp>();
             auto text_count = texts.size();
 
             auto enemy_hit_events = registry.view<EnemyHitEvent>();
@@ -133,7 +145,7 @@ namespace gameplay_screen {
         }
 
         void manage_stage() {
-            auto enemies = registry.view<RectangleComp, HealthComp, const EnemyComp>();
+            auto enemies = registry.view<const RectangleComp, const HealthComp, const EnemyComp>();
 
             if (enemies.size_hint() == 0) {
                 stage_manager.init_next_stage(registry);
@@ -180,7 +192,7 @@ namespace gameplay_screen {
                 return;
             }
 
-            auto &player_rect = player_view.get<RectangleComp>(player).rect;
+            auto &player_rect = player_view.get<const RectangleComp>(player).rect; // TODO: const ?
 
             auto bullet_dims = glm::vec2(15.0f, 30.0f);
             auto bullet_pos = glm::vec2(player_rect.x + player_rect.width / 2.0f - bullet_dims.x / 2.0f, player_rect.y - bullet_dims.y);
@@ -212,7 +224,7 @@ namespace gameplay_screen {
                 auto bullet = registry.create();
                 registry.emplace<BulletComp>(bullet);
                 registry.emplace<EnemyComp>(bullet);
-                registry.emplace<RectangleComp>(bullet, rect.x, rect.y, 15.0f, 30.0f);
+                registry.emplace<RectangleComp>(bullet, rect.x, rect.y, 15.0f, 30.0f); // TODO: as above
                 registry.emplace<VelocityComp>(bullet, glm::vec2(0.0f, 500.0f));
                 registry.emplace<ColorComp>(bullet, RED);
                 registry.emplace<DespawnOnScreenLeftComp>(bullet);
@@ -265,16 +277,16 @@ namespace gameplay_screen {
                 auto left_on_bottom = pos_y > GetScreenHeight() + height;
 
                 if (left_on_left || left_on_right || left_on_top || left_on_bottom) {
-                    registry.destroy(entity);
+                    registry.emplace<DestroyEntityComp>(entity);
                 }
             }
         }
 
         void check_bullet_enemy_collisions() {
-            auto bullets = registry.view<RectangleComp, const DamageComp, const BulletComp, const PlayerComp>();
+            auto bullets = registry.view<const RectangleComp, const DamageComp, const BulletComp, const PlayerComp>();
 
             for (auto [bullet, bullet_rect, bullet_damage] : bullets.each()) {
-                auto enemies = registry.view<RectangleComp, HealthComp, const EnemyComp>();
+                auto enemies = registry.view<const RectangleComp, HealthComp, const EnemyComp>();
 
                 for (auto [enemy, enemy_rect, enemy_health] : enemies.each()) {
                     auto collided = CheckCollisionRecs(bullet_rect.rect, enemy_rect.rect);
@@ -286,7 +298,7 @@ namespace gameplay_screen {
 
                         EnemyHitEvent(hit_pos).send(registry);
 
-                        registry.destroy(bullet);
+                        registry.emplace<DestroyEntityComp>(bullet);
                         
                         break;
                     }
@@ -295,10 +307,10 @@ namespace gameplay_screen {
         }
 
         void check_bullet_player_collisions() {
-            auto bullets = registry.view<RectangleComp, const DamageComp, const BulletComp, const EnemyComp>();
+            auto bullets = registry.view<const RectangleComp, const DamageComp, const BulletComp, const EnemyComp>();
 
             for (auto [bullet, bullet_rect, bullet_damage] : bullets.each()) {
-                auto players = registry.view<RectangleComp, HealthComp, const PlayerComp>();
+                auto players = registry.view<const RectangleComp, HealthComp, const PlayerComp>();
 
                 for (auto [playere, player_rect, player_health] : players.each()) {
                     auto collided = CheckCollisionRecs(bullet_rect.rect, player_rect.rect);
@@ -306,7 +318,7 @@ namespace gameplay_screen {
                     if (collided) {
                         player_health.health -= bullet_damage.damage;
 
-                        registry.destroy(bullet);
+                        registry.emplace<DestroyEntityComp>(bullet);
                         
                         break;
                     }
@@ -331,6 +343,14 @@ namespace gameplay_screen {
                     the_score += score;
                 }
 
+                registry.emplace<DestroyEntityComp>(entity);
+            }
+        }
+
+        void destroy_entities() {
+            auto entities = registry.view<const DestroyEntityComp>();
+
+            for (auto [entity] : entities.each()) {
                 registry.destroy(entity);
             }
         }
@@ -342,14 +362,15 @@ namespace gameplay_screen {
             auto &score = score_view.get<ScoreComp>(score_entity).score;
             auto &text = score_view.get<TextComp>(score_entity).text;
 
-            text = "Score: " + std::to_string(score);
+            // text = "Score: " + std::to_string(score);
+            text = std::string("");
         }
 
         void destroy_processed_events() {
-            auto events = registry.view<ProcessedEventComp>();
+            auto events = registry.view<const ProcessedEventComp>();
 
             for (auto [event_entity] : events.each()) {
-                registry.destroy(event_entity);
+                registry.emplace<DestroyEntityComp>(event_entity);
             }
         }
     };
