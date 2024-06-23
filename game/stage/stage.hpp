@@ -24,7 +24,6 @@ namespace stage {
 
         void init_next_stage(entt::registry &registry) {
             stages[current_stage](registry);
-            // TODO: do something better
             if (current_stage != stages.size() - 1) {
                 current_stage++;
             }

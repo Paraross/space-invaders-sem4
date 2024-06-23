@@ -1,17 +1,39 @@
 #pragma once
 
+#include "raylib.h"
 #include "entt.hpp"
+#include "vec2.hpp"
 
 #include "other.hpp"
 
 namespace stage {
-    void stage0_init(entt::registry &registry) {
+    void spawn_enemy_at_pos(entt::registry &registry, glm::vec2 pos) {
+        auto texture = Texture2D();
+        texture = LoadTexture("resources/enemy.png");
+
         auto enemy = registry.create();
         registry.emplace<EnemyComp>(enemy);
-        registry.emplace<RectangleComp>(enemy, GetScreenWidth() / 2.0f, 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
-        registry.emplace<ColorComp>(enemy, RED);
+        registry.emplace<RectangleComp>(enemy, pos.x, pos.y, 75.0f, 50.0f);
+        registry.emplace<TextureComp>(enemy, texture);
         registry.emplace<HealthComp>(enemy, 3.0f);
-        registry.emplace<ScoreComp>(enemy, 2);
+        registry.emplace<ScoreComp>(enemy, 1);
+    }
+
+    void spawn_shooting_enemy_at_pos(entt::registry &registry, glm::vec2 pos) {
+        auto texture = Texture2D();
+        texture = LoadTexture("resources/enemy.png");
+
+        auto enemy = registry.create();
+        registry.emplace<EnemyComp>(enemy);
+        registry.emplace<RectangleComp>(enemy, pos.x, pos.y, 75.0f, 50.0f);
+        registry.emplace<TextureComp>(enemy, texture);
+        registry.emplace<HealthComp>(enemy, 3.0f);
+        registry.emplace<FireCooldownComp>(enemy, 2.0f);
+        registry.emplace<ScoreComp>(enemy, 1);
+    }
+
+    void stage0_init(entt::registry &registry) {
+        spawn_enemy_at_pos(registry, glm::vec2(GetScreenWidth() / 2.0f, 30.0f + 50.0f + 30.0f));
     }
 
     void stage1_init(entt::registry &registry) {
@@ -21,12 +43,7 @@ namespace stage {
         for (size_t i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = registry.create();
-            registry.emplace<EnemyComp>(enemy);
-            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f, 75.0f, 50.0f);
-            registry.emplace<ColorComp>(enemy, RED);
-            registry.emplace<HealthComp>(enemy, 3.0f);
-            registry.emplace<ScoreComp>(enemy, 2);
+            spawn_enemy_at_pos(registry, glm::vec2((space * (float)(i + 1)) + 75.0f * (float)i, 30.0f));
         }
 
         enemy_count -= 1;
@@ -35,12 +52,7 @@ namespace stage {
         for (auto i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = registry.create();
-            registry.emplace<EnemyComp>(enemy);
-            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
-            registry.emplace<ColorComp>(enemy, RED);
-            registry.emplace<HealthComp>(enemy, 1.0f);
-            registry.emplace<ScoreComp>(enemy, 1);
+            spawn_enemy_at_pos(registry, glm::vec2(space * (float)(i + 1) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f));
         }
 
         enemy_count += 1;
@@ -49,13 +61,7 @@ namespace stage {
         for (auto i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = registry.create();
-            registry.emplace<EnemyComp>(enemy);
-            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
-            registry.emplace<ColorComp>(enemy, RED);
-            registry.emplace<HealthComp>(enemy, 2.0f);
-            registry.emplace<FireCooldownComp>(enemy, 2.0f);
-            // registry.emplace<ScoreComp>(enemy, 1);
+            spawn_shooting_enemy_at_pos(registry, glm::vec2(space * (float)(i + 1) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f));
         }
     }
 
@@ -66,12 +72,7 @@ namespace stage {
         for (size_t i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = registry.create();
-            registry.emplace<EnemyComp>(enemy);
-            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f, 75.0f, 50.0f);
-            registry.emplace<ColorComp>(enemy, RED);
-            registry.emplace<HealthComp>(enemy, 3.0f);
-            registry.emplace<ScoreComp>(enemy, 2);
+            spawn_enemy_at_pos(registry, glm::vec2((space * (float)(i + 1)) + 75.0f * (float)i, 30.0f));
         }
 
         enemy_count -= 1;
@@ -80,12 +81,7 @@ namespace stage {
         for (auto i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = registry.create();
-            registry.emplace<EnemyComp>(enemy);
-            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
-            registry.emplace<ColorComp>(enemy, RED);
-            registry.emplace<HealthComp>(enemy, 1.0f);
-            registry.emplace<ScoreComp>(enemy, 1);
+            spawn_enemy_at_pos(registry, glm::vec2(space * (float)(i + 1) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f));
         }
 
         enemy_count += 1;
@@ -94,13 +90,7 @@ namespace stage {
         for (auto i = 0; i < enemy_count; i++) {
             const auto space = (GetScreenWidth() - enemy_count * 75.0f) / (enemy_count + 1.0f);
 
-            auto enemy = registry.create();
-            registry.emplace<EnemyComp>(enemy);
-            registry.emplace<RectangleComp>(enemy, (space * (float)(i + 1)) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f, 75.0f, 50.0f);
-            registry.emplace<ColorComp>(enemy, RED);
-            registry.emplace<HealthComp>(enemy, 2.0f);
-            registry.emplace<FireCooldownComp>(enemy, 2.0f);
-            // registry.emplace<ScoreComp>(enemy, 1);
+            spawn_shooting_enemy_at_pos(registry, glm::vec2(space * (float)(i + 1) + 75.0f * (float)i, 30.0f + 50.0f + 30.0f + 50.0f + 30.0f));
         }
     }
 }
