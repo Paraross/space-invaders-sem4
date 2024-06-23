@@ -40,6 +40,10 @@ struct ColorComp {
     Color color;
 };
 
+struct TextureComp {
+    Texture2D texture;
+};
+
 struct VelocityComp {
     glm::vec2 velocity;
 };

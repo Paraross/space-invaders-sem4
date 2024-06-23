@@ -13,6 +13,22 @@ void draw_color_rectangles(entt::registry &registry) {
     }
 }
 
+void draw_textures_with_rectangles(entt::registry &registry) {
+    auto textures = registry.view<const TextureComp, const RectangleComp>();
+
+    for (const auto [_, texture, rect] : textures.each()) {
+        auto target_width = rect.rect.width;
+        auto texture_width = texture.texture.width;
+
+        auto scale = target_width / texture_width;
+
+        auto pos_x = rect.rect.x;
+        auto pos_y = rect.rect.y;
+
+        DrawTextureEx(texture.texture, Vector2(pos_x, pos_y), 0.0f, scale, WHITE);
+    }
+}
+
 void draw_text(entt::registry &registry) {
     auto texts = registry.view<const TextComp>();
 
