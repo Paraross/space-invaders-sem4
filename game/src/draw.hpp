@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include "entt.hpp"
 
-#include "other.hpp"
+#include "components.hpp"
 
 void draw_color_rectangles(entt::registry &registry) {
     auto drawables = registry.view<const RectangleComp, const ColorComp>();

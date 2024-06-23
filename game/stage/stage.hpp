@@ -4,7 +4,7 @@
 
 #include "entt.hpp"
 
-#include "other.hpp"
+#include "components.hpp"
 #include "stage/stages.hpp"
 
 namespace stage {

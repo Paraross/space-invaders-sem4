@@ -4,7 +4,7 @@
 #include "entt.hpp"
 #include "vec2.hpp"
 
-#include "other.hpp"
+#include "components.hpp"
 
 namespace stage {
     void spawn_enemy_at_pos(entt::registry &registry, glm::vec2 pos) {

@@ -4,7 +4,7 @@
 #include "entt.hpp"
 #include "vec2.hpp"
 
-#include "other.hpp"
+#include "components.hpp"
 #include "screen/game_screen.hpp"
 #include "draw.hpp"
 #include "utils.hpp"

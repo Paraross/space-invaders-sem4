@@ -7,7 +7,7 @@
 #include "raylib.h"
 #include "entt.hpp"
 
-#include "other.hpp"
+#include "components.hpp"
 #include "draw.hpp"
 #include "event.hpp"
 #include "input.hpp"

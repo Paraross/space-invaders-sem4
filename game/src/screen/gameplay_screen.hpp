@@ -4,7 +4,7 @@
 
 #include "entt.hpp"
 
-#include "other.hpp"
+#include "components.hpp"
 #include "input.hpp"
 #include "screen/game_screen.hpp"
 #include "stage/stage.hpp"
