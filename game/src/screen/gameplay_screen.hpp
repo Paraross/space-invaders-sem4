@@ -36,11 +36,13 @@ namespace gameplay_screen {
             //+ player
             auto player = registry.create();
             registry.emplace<PlayerComp>(player);
-            registry.emplace<RectangleComp>(player, half_screen_width(), GetScreenHeight() - 90.0f, 40.0f, 40.0f);
+            registry.emplace<RectangleComp>(player, half_screen_width(), GetScreenHeight() - 90.0f, 65.0f, 65.0f);
             registry.emplace<VelocityComp>(player, glm::vec2(0.0f, 0.0f));
             registry.emplace<MaxSpeedComp>(player, 1000.0f);
             registry.emplace<FireCooldownComp>(player, 0.2f);
-            registry.emplace<ColorComp>(player, BLACK);
+            auto texture = Texture2D();
+            texture = LoadTexture("resources/player_ship.png");
+            registry.emplace<TextureComp>(player, texture);
             registry.emplace<HealthComp>(player, 1.0f);
 
             stage_manager.reset_current_stage();
@@ -83,6 +85,7 @@ namespace gameplay_screen {
 
         void draw() {
             draw_color_rectangles(registry);
+            draw_textures_with_rectangles(registry);
             draw_text(registry);
         }
 
