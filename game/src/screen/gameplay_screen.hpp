@@ -33,9 +33,9 @@ namespace gameplay_screen {
             registry.emplace<ScoreComp>(score, 0);
             registry.emplace<TextComp>(score, "Score: ", glm::vec2(10.0f, 10.0f), 40, BLACK);
 
-            //+ player
             auto player = registry.create();
             registry.emplace<PlayerComp>(player);
+            registry.emplace<ThePlayerComp>(player);
             registry.emplace<RectangleComp>(player, half_screen_width(), GetScreenHeight() - 90.0f, 65.0f, 65.0f);
             registry.emplace<VelocityComp>(player, glm::vec2(0.0f, 0.0f));
             registry.emplace<MaxSpeedComp>(player, 1000.0f);
@@ -65,6 +65,7 @@ namespace gameplay_screen {
             update_fire_cd();
 
             update_rectangle_position();
+            restrict_player_movement();
             update_on_screen_left_despawning();
             update_score_text();
 
@@ -108,7 +109,6 @@ namespace gameplay_screen {
             return score;
         }
 
-        // for a lack of a better name
         auto check_transition() -> Transition {
             if (player_died()) {
                 return Transition::to_with_score(id(), GameScreenType::GameOver, get_score_value());
@@ -155,6 +155,7 @@ namespace gameplay_screen {
         }
 
         void update_player_movement() {
+            // TODO: constrain movement to x axis and the window
             auto player_view = registry.view<VelocityComp, const MaxSpeedComp, const PlayerComp>();
             auto player = player_view.front();
 
@@ -177,6 +178,33 @@ namespace gameplay_screen {
             }
             if (keybinds.is_down(InputAction::MoveDown)) {
                 velocity.y += speed;
+            }
+        }
+
+        void restrict_player_movement() {
+            auto player_view = registry.view<RectangleComp, const ThePlayerComp>();
+            auto player = player_view.front();
+
+            auto right_bound = (float)GetScreenWidth();
+            auto left_bound = 0.0f;
+            auto down_bound = (float)GetScreenHeight();
+            auto up_bound = down_bound - 300.0f;
+
+            auto &player_rect = player_view.get<RectangleComp>(player).rect;
+            auto &player_pos_x = player_rect.x;
+            auto &player_pos_y = player_rect.y;
+            auto &player_width = player_rect.width;
+            auto &player_height = player_rect.height;
+
+            if (player_pos_x + player_width > right_bound) {
+                player_pos_x = right_bound - player_width;
+            } else if (player_pos_x < left_bound) {
+                player_pos_x = left_bound;
+            }
+            if (player_pos_y < up_bound) {
+                player_pos_y = up_bound;
+            } else if (player_pos_y + player_height > down_bound) {
+                player_pos_y = down_bound - player_height;
             }
         }
 

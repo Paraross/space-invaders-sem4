@@ -7,6 +7,8 @@
 
 struct PlayerComp {};
 
+struct ThePlayerComp {};
+
 struct EnemyComp {};
 
 struct BulletComp {};
